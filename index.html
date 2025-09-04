@@ -6,11 +6,11 @@
   <title>Web Dark Mode</title>
   <style>
     body {
-      background-color: #000000;
-      color: #ffffff;
-      font-family: Arial, sans-serif;
       margin: 0;
       padding: 0;
+      font-family: Arial, sans-serif;
+      background-color: #000000;
+      color: #ffffff;
     }
 
     /* Header */
@@ -84,7 +84,7 @@
       margin: 40px auto;
       padding: 20px;
       background-color: #000000;
-      opacity: 0; /* để fade-in */
+      opacity: 0;
       transition: opacity 0.5s ease;
     }
 
@@ -100,9 +100,45 @@
       color: #cccccc;
       line-height: 1.6;
     }
+
+    /* Overlay load */
+    #overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #000000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+    }
+
+    /* Spinner */
+    .spinner {
+      border: 6px solid #333;
+      border-top: 6px solid #fff;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg);}
+      100% { transform: rotate(360deg);}
+    }
   </style>
 </head>
 <body>
+
+  <!-- Overlay Load -->
+  <div id="overlay">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Header -->
   <header>
     <div class="dropdown">
       <button class="dropbtn" id="menuBtn">☰</button>
@@ -116,16 +152,26 @@
     <div class="logo" id="logo">Web Dark Mode</div>
   </header>
 
+  <!-- Nội dung chính -->
   <div class="container" id="mainContent">
-    <h1>🌑 Giới thiệu</h1>
+    <h1> Giới thiệu</h1>
     <p>Toàn bộ web có nền màu đen, chữ trắng. Đây là nội dung Home mặc định.</p>
   </div>
 
   <script>
+    const overlay = document.getElementById('overlay');
     const menuBtn = document.getElementById('menuBtn');
     const dropdownMenu = document.getElementById('dropdownMenu');
     const mainContent = document.getElementById('mainContent');
     const logo = document.getElementById('logo');
+
+    // Hide overlay sau khi load web
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        overlay.style.display = 'none';
+        mainContent.classList.add('show');
+      }, 1000); // thời gian hiển thị spinner 1s
+    });
 
     // Toggle menu mở/đóng
     menuBtn.addEventListener('click', () => {
@@ -139,29 +185,31 @@
       }
     });
 
-    // Hàm hiển thị nội dung theo page với hiệu ứng fade-in
+    // Hàm hiển thị nội dung với overlay load
     function showPage(page){
-      mainContent.classList.remove('show'); // ẩn nội dung trước khi đổi
+      overlay.style.display = 'flex';  // bật overlay
+      mainContent.classList.remove('show');
 
       setTimeout(() => {
         if(page === 'home'){
           mainContent.innerHTML = `
-            <h1>🌑 Giới thiệu</h1>
+            <h1> Giới thiệu</h1>
             <p>Toàn bộ web có nền màu đen, chữ trắng. Đây là nội dung Home.</p>
           `;
         } else if(page === 'script'){
           mainContent.innerHTML = `
-            <h1>📜 Script</h1>
+            <h1>Script</h1>
             <p>Đây là phần Script. Nội dung vẫn nền đen, chữ trắng.</p>
           `;
         } else if(page === 'connect'){
           mainContent.innerHTML = `
-            <h1>🔌 Connect</h1>
+            <h1> Connect</h1>
             <p>Đây là phần Connect. Nội dung nền đen, chữ trắng.</p>
           `;
         }
-        mainContent.classList.add('show'); // hiển thị lại với fade-in
-      }, 200); // delay nhỏ để ẩn nội dung trước khi đổi
+        overlay.style.display = 'none';
+        mainContent.classList.add('show');
+      }, 800); // thời gian spinner hiển thị khi chuyển trang
     }
 
     // Menu click
@@ -178,11 +226,6 @@
     // Click logo về Home
     logo.addEventListener('click', () => {
       showPage('home');
-    });
-
-    // Hiệu ứng load khi mới vào web
-    window.addEventListener('load', () => {
-      mainContent.classList.add('show');
     });
   </script>
 </body>
