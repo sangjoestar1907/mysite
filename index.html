@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Web Dark/Light Mode</title>
+  <title>Web Giao Diện Tối</title>
   <style>
-    /* Reset */
+    /* Reset CSS */
     * {
       margin: 0;
       padding: 0;
@@ -14,19 +14,10 @@
     }
 
     body {
-      line-height: 1.6;
-      padding: 20px;
-      transition: background 0.3s, color 0.3s;
-    }
-
-    body.dark {
       background-color: #121212;
       color: #ffffff;
-    }
-
-    body.light {
-      background-color: #f5f5f5;
-      color: #222;
+      line-height: 1.6;
+      padding: 20px;
     }
 
     header {
@@ -37,6 +28,7 @@
 
     header h1 {
       font-size: 2rem;
+      color: #f5f5f5;
     }
 
     nav {
@@ -47,7 +39,7 @@
     }
 
     nav a {
-      color: inherit;
+      color: #bbb;
       text-decoration: none;
       font-size: 1.1rem;
       transition: color 0.3s;
@@ -60,18 +52,10 @@
     .container {
       max-width: 800px;
       margin: auto;
+      background: #1e1e1e;
       padding: 20px;
       border-radius: 10px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.2);
-      transition: background 0.3s;
-    }
-
-    body.dark .container {
-      background: #1e1e1e;
-    }
-
-    body.light .container {
-      background: #fff;
+      box-shadow: 0 0 15px rgba(0,0,0,0.5);
     }
 
     h2 {
@@ -91,29 +75,11 @@
       font-size: 0.9rem;
       color: #777;
     }
-
-    .toggle-btn {
-      position: fixed;
-      top: 15px;
-      right: 15px;
-      padding: 10px 15px;
-      border: none;
-      border-radius: 8px;
-      background: #00bcd4;
-      color: #fff;
-      cursor: pointer;
-      font-weight: bold;
-      transition: 0.3s;
-    }
-
-    .toggle-btn:hover {
-      background: #0097a7;
-    }
   </style>
 </head>
-<body class="dark">
+<body>
   <header>
-    <h1>🌙 Web Dark/Light Mode</h1>
+    <h1>🌙 Web Giao Diện Tối</h1>
     <nav>
       <a href="#">Trang Chủ</a>
       <a href="#">Giới Thiệu</a>
@@ -121,31 +87,16 @@
     </nav>
   </header>
 
-  <button class="toggle-btn" onclick="toggleMode()">Đổi Giao Diện</button>
-
   <div class="container">
     <h2>Giới thiệu</h2>
-    <p>Đây là một website có thể chuyển đổi giữa Dark Mode 🌙 và Light Mode ☀️ bằng nút bấm góc phải màn hình.</p>
+    <p>Đây là một website với giao diện tối (dark theme). Giao diện này thân thiện với mắt khi sử dụng vào ban đêm hoặc trong môi trường thiếu sáng.</p>
 
     <h2>Nội dung</h2>
     <p>Bạn có thể thêm bất kỳ nội dung nào vào đây, ví dụ: blog, thông tin cá nhân, dự án, hoặc bài viết.</p>
   </div>
 
   <footer>
-    © 2025 - Web Dark/Light Mode
+    © 2025 - Web Giao Diện Tối
   </footer>
-
-  <script>
-    function toggleMode() {
-      const body = document.body;
-      if (body.classList.contains("dark")) {
-        body.classList.remove("dark");
-        body.classList.add("light");
-      } else {
-        body.classList.remove("light");
-        body.classList.add("dark");
-      }
-    }
-  </script>
 </body>
 </html>
