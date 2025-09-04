@@ -3,15 +3,14 @@ export default function handler(req, res) {
 
   // Nếu không phải Roblox thì chặn
   if (!ua.includes("Roblox")) {
-    res.status(403).send("Cút");
+    res.status(403).send("Are You Skider?");
     return;
   }
 
   // Code script Roblox của bạn
   const script = `
       print("Hello từ API riêng của bạn!")
-      print("Hello")
-      -- Bạn có thể đặt UI, auto farm, key system... ở đây
+      -- Đây là chỗ bạn bỏ code UI, auto farm, ...
   `;
 
   res.setHeader("Content-Type", "text/plain");
