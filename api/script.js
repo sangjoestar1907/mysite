@@ -3,7 +3,7 @@ export default function handler(req, res) {
 
   // Nếu không phải Roblox thì chặn
   if (!ua.includes("Roblox")) {
-    res.status(403).send("Access Denied ❌");
+    res.status(403).send("Cút");
     return;
   }
 
