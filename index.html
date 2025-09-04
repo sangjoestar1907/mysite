@@ -1,6 +1,93 @@
 <!DOCTYPE html>
-<html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Saki Hub</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(120deg, #4facfe, #00f2fe);
+      color: white;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    /* Loading */
+    #loading {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #000;
+      z-index: 1000;
+    }
+
+    .spinner {
+      border: 6px solid #f3f3f3;
+      border-top: 6px solid #00f2fe;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Nội dung chính */
+    #content {
+      display: none;
+      padding: 50px;
+    }
+
+    h1 {
+      font-size: 40px;
+      margin-bottom: 20px;
+    }
+
+    button {
+      background: white;
+      color: #4facfe;
+      border: none;
+      padding: 15px 25px;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #00f2fe;
+      color: white;
+    }
+  </style>
+</head>
 <body>
-<script src="https://api.cua-ban/luachon.js"></script>
+  <!-- Loading -->
+  <div id="loading">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Nội dung -->
+  <div id="content">
+    <h1>Chào mừng đến với Saki Hub 🚀</h1>
+    <p>Trang web demo được code bằng HTML + CSS + JS.</p>
+    <button onclick="alert('Cảm ơn bạn đã bấm!')">Bấm vào tôi</button>
+  </div>
+
+  <script>
+    // Giả lập hiệu ứng loading 2s
+    window.onload = function() {
+      setTimeout(() => {
+        document.getElementById("loading").style.display = "none";
+        document.getElementById("content").style.display = "block";
+      }, 2000);
+    }
+  </script>
 </body>
 </html>
