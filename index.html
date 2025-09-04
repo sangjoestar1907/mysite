@@ -17,7 +17,7 @@
     header {
       display: flex;
       align-items: center;
-      justify-content: center;
+      justify-content: center; /* chữ ở giữa */
       padding: 10px 20px;
       background-color: #111111;
       position: sticky;
@@ -31,6 +31,7 @@
       color: #ffffff;
       text-align: center;
       flex: 1;
+      cursor: pointer; /* hiển thị con trỏ khi hover */
     }
 
     /* Drop-down */
@@ -106,18 +107,19 @@
       </div>
     </div>
 
-    <div class="logo">Web Dark Mode</div>
+    <div class="logo" id="logo">Web Dark Mode</div>
   </header>
 
   <div class="container" id="mainContent">
-    <h1>🌑 Giới thiệu</h1>
-    <p>Toàn bộ web có nền màu đen, chữ trắng. Đây là nội dung mặc định khi nhấn Home.</p>
+    <h1> Giới thiệu</h1>
+    <p>Toàn bộ web có nền màu đen, chữ trắng. Đây là nội dung Home mặc định.</p>
   </div>
 
   <script>
     const menuBtn = document.getElementById('menuBtn');
     const dropdownMenu = document.getElementById('dropdownMenu');
     const mainContent = document.getElementById('mainContent');
+    const logo = document.getElementById('logo');
 
     // Toggle menu mở/đóng
     menuBtn.addEventListener('click', () => {
@@ -131,32 +133,40 @@
       }
     });
 
+    // Hàm hiển thị nội dung theo page
+    function showPage(page){
+      if(page === 'home'){
+        mainContent.innerHTML = `
+          <h1> Giới thiệu</h1>
+          <p>Toàn bộ web có nền màu đen, chữ trắng. Đây là nội dung Home.</p>
+        `;
+      } else if(page === 'script'){
+        mainContent.innerHTML = `
+          <h1> Script</h1>
+          <p>Đây là phần Script. Nội dung vẫn nền đen, chữ trắng.</p>
+        `;
+      } else if(page === 'connect'){
+        mainContent.innerHTML = `
+          <h1> Connect</h1>
+          <p>Đây là phần Connect. Nội dung nền đen, chữ trắng.</p>
+        `;
+      }
+    }
+
     // Thay đổi nội dung theo menu
     const links = dropdownMenu.querySelectorAll('a');
     links.forEach(link => {
       link.addEventListener('click', (e) => {
         e.preventDefault();
         const page = link.getAttribute('data-page');
-
-        if(page === 'home'){
-          mainContent.innerHTML = `
-            <h1>🌑 Giới thiệu</h1>
-            <p>Toàn bộ web có nền màu đen, chữ trắng. Đây là nội dung Home.</p>
-          `;
-        } else if(page === 'script'){
-          mainContent.innerHTML = `
-            <h1>📜 Script</h1>
-            <p>Đây là phần Script. Nội dung vẫn nền đen, chữ trắng.</p>
-          `;
-        } else if(page === 'connect'){
-          mainContent.innerHTML = `
-            <h1>🔌 Connect</h1>
-            <p>Đây là phần Connect. Nội dung nền đen, chữ trắng.</p>
-          `;
-        }
-
-        dropdownMenu.style.display = 'none'; // tắt menu sau khi click
+        showPage(page);
+        dropdownMenu.style.display = 'none';
       });
+    });
+
+    // Click vào logo để về Home
+    logo.addEventListener('click', () => {
+      showPage('home');
     });
   </script>
 </body>
