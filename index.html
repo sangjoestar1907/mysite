@@ -3,46 +3,50 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Web Dark/Light Mode</title>
-  <!-- Liên kết tới file CSS -->
-  <link rel="stylesheet" type="text/css" href="style.css">
-</head>
-<body class="dark">
-  <header>
-    <h1>🌙 Web Dark/Light Mode</h1>
-    <nav>
-      <a href="#">Trang Chủ</a>
-      <a href="#">Giới Thiệu</a>
-      <a href="#">Liên Hệ</a>
-    </nav>
-  </header>
+  <title>Web Dark Mode</title>
+  <style>
+    body {
+      background-color: #000000; /* toàn màu đen */
+      color: #ffffff;            /* chữ màu trắng */
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
 
-  <button class="toggle-btn" onclick="toggleMode()">Đổi Giao Diện</button>
+    header, footer {
+      text-align: center;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: auto;
+      padding: 20px;
+      background-color: #111111; /* nền hơi khác để nội dung nổi bật */
+      border-radius: 10px;
+    }
+
+    h1, h2 {
+      color: #ffffff;
+    }
+
+    p {
+      color: #cccccc;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🌑 Web Dark Mode</h1>
+  </header>
 
   <div class="container">
     <h2>Giới thiệu</h2>
-    <p>Đây là một website có thể chuyển đổi giữa Dark Mode 🌙 và Light Mode ☀️ bằng nút bấm góc phải màn hình.</p>
-
-    <h2>Nội dung</h2>
-    <p>Bạn có thể thêm bất kỳ nội dung nào vào đây, ví dụ: blog, thông tin cá nhân, dự án, hoặc bài viết.</p>
+    <p>Đây là website chỉ sử dụng giao diện tối với màu đen chủ đạo. Tất cả các nội dung đều hiển thị trên nền đen để bảo vệ mắt vào ban đêm.</p>
   </div>
 
   <footer>
-    © 2025 - Web Dark/Light Mode
+    © 2025 - Web Dark Mode
   </footer>
-
-  <!-- Script -->
-  <script>
-    function toggleMode() {
-      const body = document.body;
-      if (body.classList.contains("dark")) {
-        body.classList.remove("dark");
-        body.classList.add("light");
-      } else {
-        body.classList.remove("light");
-        body.classList.add("dark");
-      }
-    }
-  </script>
 </body>
 </html>
