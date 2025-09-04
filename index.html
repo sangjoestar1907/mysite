@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Web Dark Mode với Drop-down</title>
+  <title>Web Dark Mode với Drop-down Click</title>
   <style>
     body {
-      background-color: #000000; /* nền toàn web màu đen */
+      background-color: #000000;
       color: #ffffff;
       font-family: Arial, sans-serif;
       margin: 0;
@@ -21,6 +21,7 @@
       background-color: #111111;
       position: sticky;
       top: 0;
+      z-index: 10;
     }
 
     /* Drop-down */
@@ -33,7 +34,7 @@
       background-color: #222;
       color: white;
       padding: 10px 16px;
-      font-size: 20px; /* hiển thị dấu ba gạch rõ */
+      font-size: 20px;
       border: none;
       cursor: pointer;
       border-radius: 5px;
@@ -47,11 +48,12 @@
       display: none;
       position: absolute;
       background-color: #111;
-      min-width: 120px;
+      min-width: 140px;
       box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.5);
       z-index: 1;
       border-radius: 5px;
       overflow: hidden;
+      margin-top: 5px;
     }
 
     .dropdown-content a {
@@ -65,16 +67,11 @@
       background-color: #333;
     }
 
-    .dropdown:hover .dropdown-content {
-      display: block;
-    }
-
     /* Container nội dung */
     .container {
       max-width: 800px;
       margin: 40px auto;
       padding: 20px;
-      /* nền container giống nền web */
       background-color: #000000;
     }
 
@@ -91,8 +88,8 @@
 <body>
   <header>
     <div class="dropdown">
-      <button class="dropbtn">☰</button>
-      <div class="dropdown-content">
+      <button class="dropbtn" id="menuBtn">☰</button>
+      <div class="dropdown-content" id="dropdownMenu">
         <a href="#">Home</a>
         <a href="#">Script</a>
         <a href="#">Connect</a>
@@ -103,7 +100,28 @@
   <div class="container">
     <h1>🌑 Web Dark Mode</h1>
     <h2>Giới thiệu</h2>
-    <p>Toàn bộ web và nội dung đều có nền màu đen, bao gồm phần giới thiệu, tạo cảm giác đồng nhất và tối cho mắt.</p>
+    <p>Click vào nút ba gạch để mở/đóng menu drop-down. Toàn bộ web có nền màu đen.</p>
   </div>
+
+  <script>
+    const menuBtn = document.getElementById('menuBtn');
+    const dropdownMenu = document.getElementById('dropdownMenu');
+
+    menuBtn.addEventListener('click', () => {
+      // toggle hiển thị menu
+      if(dropdownMenu.style.display === 'block'){
+        dropdownMenu.style.display = 'none';
+      } else {
+        dropdownMenu.style.display = 'block';
+      }
+    });
+
+    // Optional: click ngoài menu để tắt
+    window.addEventListener('click', function(e){
+      if(!menuBtn.contains(e.target) && !dropdownMenu.contains(e.target)){
+        dropdownMenu.style.display = 'none';
+      }
+    });
+  </script>
 </body>
 </html>
