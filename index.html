@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Web Dark Mode với Drop-down Click</title>
+  <title>Web Dark Mode</title>
   <style>
     body {
       background-color: #000000;
@@ -16,6 +16,7 @@
     /* Header */
     header {
       display: flex;
+      justify-content: center; /* chữ ở giữa */
       align-items: center;
       padding: 10px 20px;
       background-color: #111111;
@@ -24,10 +25,19 @@
       z-index: 10;
     }
 
+    /* Tên web */
+    .logo {
+      font-size: 20px;
+      font-weight: bold;
+      color: #ffffff;
+      text-align: center;
+      flex: 1; /* chiếm toàn khoảng trống giữa */
+    }
+
     /* Drop-down */
     .dropdown {
-      position: relative;
-      display: inline-block;
+      position: absolute;
+      right: 20px; /* nằm bên phải */
     }
 
     .dropbtn {
@@ -47,6 +57,7 @@
     .dropdown-content {
       display: none;
       position: absolute;
+      right: 0;
       background-color: #111;
       min-width: 140px;
       box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.5);
@@ -87,6 +98,7 @@
 </head>
 <body>
   <header>
+    <div class="logo">Web Dark Mode</div>
     <div class="dropdown">
       <button class="dropbtn" id="menuBtn">☰</button>
       <div class="dropdown-content" id="dropdownMenu">
@@ -98,9 +110,8 @@
   </header>
 
   <div class="container">
-    <h1>🌑 Web Dark Mode</h1>
-    <h2>Giới thiệu</h2>
-    <p>Click vào nút ba gạch để mở/đóng menu drop-down. Toàn bộ web có nền màu đen.</p>
+    <h1>🌑 Giới thiệu</h1>
+    <p>Toàn bộ web có nền màu đen, chữ trắng. Chữ “Web Dark Mode” luôn nằm chính giữa header, menu ba gạch bên phải click để mở/đóng.</p>
   </div>
 
   <script>
@@ -108,15 +119,9 @@
     const dropdownMenu = document.getElementById('dropdownMenu');
 
     menuBtn.addEventListener('click', () => {
-      // toggle hiển thị menu
-      if(dropdownMenu.style.display === 'block'){
-        dropdownMenu.style.display = 'none';
-      } else {
-        dropdownMenu.style.display = 'block';
-      }
+      dropdownMenu.style.display = (dropdownMenu.style.display === 'block') ? 'none' : 'block';
     });
 
-    // Optional: click ngoài menu để tắt
     window.addEventListener('click', function(e){
       if(!menuBtn.contains(e.target) && !dropdownMenu.contains(e.target)){
         dropdownMenu.style.display = 'none';
