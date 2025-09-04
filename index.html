@@ -17,7 +17,7 @@
     header {
       display: flex;
       align-items: center;
-      justify-content: center; /* chữ ở giữa */
+      justify-content: center;
       padding: 10px 20px;
       background-color: #111111;
       position: sticky;
@@ -31,7 +31,7 @@
       color: #ffffff;
       text-align: center;
       flex: 1;
-      cursor: pointer; /* hiển thị con trỏ khi hover */
+      cursor: pointer;
     }
 
     /* Drop-down */
@@ -84,6 +84,12 @@
       margin: 40px auto;
       padding: 20px;
       background-color: #000000;
+      opacity: 0; /* để fade-in */
+      transition: opacity 0.5s ease;
+    }
+
+    .container.show {
+      opacity: 1;
     }
 
     h1, h2 {
@@ -111,7 +117,7 @@
   </header>
 
   <div class="container" id="mainContent">
-    <h1> Giới thiệu</h1>
+    <h1>🌑 Giới thiệu</h1>
     <p>Toàn bộ web có nền màu đen, chữ trắng. Đây là nội dung Home mặc định.</p>
   </div>
 
@@ -133,27 +139,32 @@
       }
     });
 
-    // Hàm hiển thị nội dung theo page
+    // Hàm hiển thị nội dung theo page với hiệu ứng fade-in
     function showPage(page){
-      if(page === 'home'){
-        mainContent.innerHTML = `
-          <h1> Giới thiệu</h1>
-          <p>Toàn bộ web có nền màu đen, chữ trắng. Đây là nội dung Home.</p>
-        `;
-      } else if(page === 'script'){
-        mainContent.innerHTML = `
-          <h1> Script</h1>
-          <p>Đây là phần Script. Nội dung vẫn nền đen, chữ trắng.</p>
-        `;
-      } else if(page === 'connect'){
-        mainContent.innerHTML = `
-          <h1> Connect</h1>
-          <p>Đây là phần Connect. Nội dung nền đen, chữ trắng.</p>
-        `;
-      }
+      mainContent.classList.remove('show'); // ẩn nội dung trước khi đổi
+
+      setTimeout(() => {
+        if(page === 'home'){
+          mainContent.innerHTML = `
+            <h1>🌑 Giới thiệu</h1>
+            <p>Toàn bộ web có nền màu đen, chữ trắng. Đây là nội dung Home.</p>
+          `;
+        } else if(page === 'script'){
+          mainContent.innerHTML = `
+            <h1>📜 Script</h1>
+            <p>Đây là phần Script. Nội dung vẫn nền đen, chữ trắng.</p>
+          `;
+        } else if(page === 'connect'){
+          mainContent.innerHTML = `
+            <h1>🔌 Connect</h1>
+            <p>Đây là phần Connect. Nội dung nền đen, chữ trắng.</p>
+          `;
+        }
+        mainContent.classList.add('show'); // hiển thị lại với fade-in
+      }, 200); // delay nhỏ để ẩn nội dung trước khi đổi
     }
 
-    // Thay đổi nội dung theo menu
+    // Menu click
     const links = dropdownMenu.querySelectorAll('a');
     links.forEach(link => {
       link.addEventListener('click', (e) => {
@@ -164,9 +175,14 @@
       });
     });
 
-    // Click vào logo để về Home
+    // Click logo về Home
     logo.addEventListener('click', () => {
       showPage('home');
+    });
+
+    // Hiệu ứng load khi mới vào web
+    window.addEventListener('load', () => {
+      mainContent.classList.add('show');
     });
   </script>
 </body>
