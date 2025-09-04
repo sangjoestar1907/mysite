@@ -16,8 +16,8 @@
     /* Header */
     header {
       display: flex;
-      justify-content: center; /* chữ ở giữa */
       align-items: center;
+      justify-content: center;
       padding: 10px 20px;
       background-color: #111111;
       position: sticky;
@@ -25,19 +25,18 @@
       z-index: 10;
     }
 
-    /* Tên web */
     .logo {
       font-size: 20px;
       font-weight: bold;
       color: #ffffff;
       text-align: center;
-      flex: 1; /* chiếm toàn khoảng trống giữa */
+      flex: 1;
     }
 
     /* Drop-down */
     .dropdown {
       position: absolute;
-      right: 20px; /* nằm bên phải */
+      left: 20px;
     }
 
     .dropbtn {
@@ -57,7 +56,7 @@
     .dropdown-content {
       display: none;
       position: absolute;
-      right: 0;
+      left: 0;
       background-color: #111;
       min-width: 140px;
       box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.5);
@@ -98,34 +97,66 @@
 </head>
 <body>
   <header>
-    <div class="logo">Web Dark Mode</div>
     <div class="dropdown">
       <button class="dropbtn" id="menuBtn">☰</button>
       <div class="dropdown-content" id="dropdownMenu">
-        <a href="#">Home</a>
-        <a href="#">Script</a>
-        <a href="#">Connect</a>
+        <a href="#" data-page="home">Home</a>
+        <a href="#" data-page="script">Script</a>
+        <a href="#" data-page="connect">Connect</a>
       </div>
     </div>
+
+    <div class="logo">Web Dark Mode</div>
   </header>
 
-  <div class="container">
+  <div class="container" id="mainContent">
     <h1>🌑 Giới thiệu</h1>
-    <p>Toàn bộ web có nền màu đen, chữ trắng. Chữ “Web Dark Mode” luôn nằm chính giữa header, menu ba gạch bên phải click để mở/đóng.</p>
+    <p>Toàn bộ web có nền màu đen, chữ trắng. Đây là nội dung mặc định khi nhấn Home.</p>
   </div>
 
   <script>
     const menuBtn = document.getElementById('menuBtn');
     const dropdownMenu = document.getElementById('dropdownMenu');
+    const mainContent = document.getElementById('mainContent');
 
+    // Toggle menu mở/đóng
     menuBtn.addEventListener('click', () => {
       dropdownMenu.style.display = (dropdownMenu.style.display === 'block') ? 'none' : 'block';
     });
 
+    // Click ngoài menu sẽ tắt
     window.addEventListener('click', function(e){
       if(!menuBtn.contains(e.target) && !dropdownMenu.contains(e.target)){
         dropdownMenu.style.display = 'none';
       }
+    });
+
+    // Thay đổi nội dung theo menu
+    const links = dropdownMenu.querySelectorAll('a');
+    links.forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const page = link.getAttribute('data-page');
+
+        if(page === 'home'){
+          mainContent.innerHTML = `
+            <h1>🌑 Giới thiệu</h1>
+            <p>Toàn bộ web có nền màu đen, chữ trắng. Đây là nội dung Home.</p>
+          `;
+        } else if(page === 'script'){
+          mainContent.innerHTML = `
+            <h1>📜 Script</h1>
+            <p>Đây là phần Script. Nội dung vẫn nền đen, chữ trắng.</p>
+          `;
+        } else if(page === 'connect'){
+          mainContent.innerHTML = `
+            <h1>🔌 Connect</h1>
+            <p>Đây là phần Connect. Nội dung nền đen, chữ trắng.</p>
+          `;
+        }
+
+        dropdownMenu.style.display = 'none'; // tắt menu sau khi click
+      });
     });
   </script>
 </body>
