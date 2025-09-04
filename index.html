@@ -3,25 +3,78 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Web Dark Mode</title>
+  <title>Web Dark Mode với Drop-down</title>
   <style>
     body {
-      background-color: #000000; /* toàn màu đen */
-      color: #ffffff;            /* chữ màu trắng */
+      background-color: #000000;
+      color: #ffffff;
       font-family: Arial, sans-serif;
-      padding: 20px;
+      margin: 0;
+      padding: 0;
     }
 
-    header, footer {
-      text-align: center;
-      padding: 20px;
+    /* Header */
+    header {
+      display: flex;
+      align-items: center;
+      padding: 10px 20px;
+      background-color: #111111;
+      position: sticky;
+      top: 0;
     }
 
+    /* Drop-down */
+    .dropdown {
+      position: relative;
+      display: inline-block;
+    }
+
+    .dropbtn {
+      background-color: #222;
+      color: white;
+      padding: 10px 16px;
+      font-size: 16px;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    .dropbtn:hover {
+      background-color: #333;
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      background-color: #111;
+      min-width: 120px;
+      box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.5);
+      z-index: 1;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+    .dropdown-content a {
+      color: #fff;
+      padding: 10px 16px;
+      text-decoration: none;
+      display: block;
+    }
+
+    .dropdown-content a:hover {
+      background-color: #333;
+    }
+
+    .dropdown:hover .dropdown-content {
+      display: block;
+    }
+
+    /* Container nội dung */
     .container {
       max-width: 800px;
-      margin: auto;
+      margin: 40px auto;
       padding: 20px;
-      background-color: #111111; /* nền hơi khác để nội dung nổi bật */
+      background-color: #111;
       border-radius: 10px;
     }
 
@@ -37,16 +90,20 @@
 </head>
 <body>
   <header>
-    <h1>🌑 Web Dark Mode</h1>
+    <div class="dropdown">
+      <button class="dropbtn">Menu</button>
+      <div class="dropdown-content">
+        <a href="#">Home</a>
+        <a href="#">Script</a>
+        <a href="#">Connect</a>
+      </div>
+    </div>
   </header>
 
   <div class="container">
+    <h1>🌑 Web Dark Mode</h1>
     <h2>Giới thiệu</h2>
-    <p>Đây là website chỉ sử dụng giao diện tối với màu đen chủ đạo. Tất cả các nội dung đều hiển thị trên nền đen để bảo vệ mắt vào ban đêm.</p>
+    <p>Đây là website sử dụng giao diện tối và có menu Drop-down ở góc trên bên trái với các mục Home, Script, Connect.</p>
   </div>
-
-  <footer>
-    © 2025 - Web Dark Mode
-  </footer>
 </body>
 </html>
