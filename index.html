@@ -17,13 +17,18 @@
     header {
       display: flex;
       align-items: center;
-      justify-content: center;
-      padding: 10px 0;
+      justify-content: space-between;
+      padding: 10px;
       background-color: #111;
       position: sticky;
       top: 0;
       z-index: 1000;
-      position: relative;
+    }
+
+    .left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
     .logo {
@@ -34,17 +39,12 @@
 
     /* Nút ba gạch */
     .dropbtn {
-      position: absolute;
-      left: 0;
-      top: 50%;
-      transform: translateY(-50%);
       background-color: #222;
       color: white;
       padding: 10px 16px;
       font-size: 20px;
       border: none;
       cursor: pointer;
-      border-radius: 0;
     }
 
     .dropbtn:hover {
@@ -134,16 +134,23 @@
       background-color: #5865F2;
       color: white;
       border: none;
-      padding: 12px 20px;
+      padding: 8px 16px;
       border-radius: 6px;
-      font-size: 16px;
+      font-size: 14px;
       cursor: pointer;
-      margin-top: 10px;
       transition: 0.2s;
     }
 
     button:hover {
       background-color: #4752c4;
+    }
+
+    /* Nút nhạc ở góc phải */
+    #musicBtn {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
     }
   </style>
 </head>
@@ -156,8 +163,11 @@
 
   <!-- Header -->
   <header>
-    <button class="dropbtn" id="menuBtn">☰</button>
-    <div class="logo" id="logo">Saki-Hub</div>
+    <div class="left">
+      <button class="dropbtn" id="menuBtn">☰</button>
+      <div class="logo" id="logo">Saki-Hub</div>
+    </div>
+    <button id="musicBtn">Phát nhạc</button>
   </header>
 
   <!-- Sidebar menu -->
@@ -186,6 +196,7 @@
     const mainContent = document.getElementById('mainContent');
     const logo = document.getElementById('logo');
     const bgm = document.getElementById('bgm');
+    const musicBtn = document.getElementById('musicBtn');
 
     let currentPage = localStorage.getItem("page") || "home";
     let playing = false;
@@ -231,24 +242,10 @@
           mainContent.innerHTML = `
             <h1>Connect</h1>
             <p>Đây là phần Connect. Nội dung nền đen, chữ trắng.</p>
-            <button id="discordBtn">Vào Discord</button><br>
-            <button id="musicBtn">Phát nhạc</button>
+            <button id="discordBtn">Vào Discord</button>
           `;
-          // nút Discord
           document.getElementById("discordBtn").addEventListener("click", () => {
             window.open("https://discord.gg/cHrynR4E", "_blank");
-          });
-          // nút Music
-          const musicBtn = document.getElementById("musicBtn");
-          musicBtn.addEventListener("click", () => {
-            if (playing) {
-              bgm.pause();
-              musicBtn.textContent = "Phát nhạc";
-            } else {
-              bgm.play();
-              musicBtn.textContent = "Tắt nhạc";
-            }
-            playing = !playing;
           });
         }
         overlay.style.display = 'none';
@@ -274,6 +271,18 @@
     // Click logo về Home
     logo.addEventListener('click', () => {
       showPage('home');
+    });
+
+    // Nút nhạc
+    musicBtn.addEventListener("click", () => {
+      if (playing) {
+        bgm.pause();
+        musicBtn.textContent = "Phát nhạc";
+      } else {
+        bgm.play();
+        musicBtn.textContent = "Tắt nhạc";
+      }
+      playing = !playing;
     });
   </script>
 </body>
