@@ -17,7 +17,7 @@
     header {
       display: flex;
       align-items: center;
-      justify-content: center; /* logo ở giữa */
+      justify-content: center;
       padding: 10px 0;
       background-color: #111;
       position: sticky;
@@ -57,12 +57,12 @@
       width: 220px;
       position: fixed;
       top: 0;
-      left: -220px; /* ẩn bên trái */
+      left: -220px;
       background-color: #111;
       overflow-x: hidden;
       transition: 0.3s;
       z-index: 2000;
-      padding-top: 60px; /* để không đè lên header */
+      padding-top: 60px;
     }
 
     .dropdown-content a {
@@ -77,7 +77,7 @@
     }
 
     .dropdown-content.show {
-      left: 0; /* trượt vào */
+      left: 0;
     }
 
     /* Container nội dung */
@@ -121,6 +121,22 @@
     @keyframes spin {
       0% { transform: rotate(0deg);}
       100% { transform: rotate(360deg);}
+    }
+
+    /* Nút Discord */
+    button {
+      background-color: #5865F2; /* màu Discord */
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      background-color: #4752c4;
     }
   </style>
 </head>
@@ -197,7 +213,13 @@
           mainContent.innerHTML = `
             <h1>Connect</h1>
             <p>Đây là phần Connect. Nội dung nền đen, chữ trắng.</p>
+            <button id="discordBtn">Tham gia Discord</button>
           `;
+          // gắn sự kiện cho nút Discord
+          const discordBtn = document.getElementById("discordBtn");
+          discordBtn.addEventListener("click", () => {
+            window.open("https://discord.gg/abcxyz", "_blank"); // đổi link này thành link Discord của bạn
+          });
         }
         overlay.style.display = 'none';
         mainContent.classList.add('show');
