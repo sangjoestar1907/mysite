@@ -11,14 +11,14 @@
       font-family: Arial, sans-serif;
       background-color: #000;
       color: #fff;
-      overflow-x: hidden; /* chặn cuộn ngang khi mở sidebar */
+      overflow-x: hidden;
     }
 
     /* Header */
     header {
       display: flex;
       align-items: center;
-      justify-content: center;
+      justify-content: space-between; /* đẩy logo ra giữa */
       padding: 10px 20px;
       background-color: #111;
       position: sticky;
@@ -44,8 +44,6 @@
       border: none;
       cursor: pointer;
       border-radius: 5px;
-      position: absolute;
-      left: 20px;
     }
 
     .dropbtn:hover {
@@ -67,7 +65,7 @@
     }
 
     .sidebar.show {
-      left: 0; /* trượt vào */
+      left: 0;
     }
 
     .sidebar a {
