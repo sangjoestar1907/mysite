@@ -1,135 +1,106 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Saki-Hub</title>
+  <title>SaKi-Hub</title>
   <style>
     body {
       margin: 0;
-      padding: 0;
       font-family: Arial, sans-serif;
-      background-color: #000;
-      color: #fff;
+      background-color: black;
+      color: white;
+      overflow-x: hidden;
     }
 
     /* Header */
-    header {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 10px 0;
-      background-color: #111;
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      position: relative;
-    }
-
-    .logo {
-      font-size: 20px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    /* Nút ba gạch */
-    .dropbtn {
-      position: absolute;
-      left: 0;
-      top: 50%;
-      transform: translateY(-50%);
-      background-color: #222;
-      color: white;
-      padding: 10px 16px;
-      font-size: 20px;
-      border: none;
-      cursor: pointer;
-      border-radius: 0;
-    }
-
-    .dropbtn:hover {
-      background-color: #333;
-    }
-
-    /* Sidebar */
-    .dropdown-content {
-      height: 100vh;
-      width: 220px;
+    .header {
       position: fixed;
       top: 0;
-      left: -220px;
-      background-color: #111;
-      overflow-y: auto;
-      transition: 0.3s;
-      z-index: 2000;
-    }
-
-    .dropdown-content.show {
       left: 0;
+      width: 100%;
+      background-color: #111;
+      padding: 15px;
+      display: flex;
+      align-items: center;
+      z-index: 1000;
     }
 
-    .menu-header {
+    .header h1 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    /* Hamburger icon */
+    .dropdown {
+      cursor: pointer;
+      font-size: 26px;
+      margin-right: 20px;
+      color: white;
+    }
+
+    /* Sidebar menu */
+    .dropdown-content {
+      height: 100%;
+      width: 0;
+      position: fixed;
+      z-index: 2000;
+      top: 0;
+      left: 0;
+      background-color: #000;
+      overflow-x: hidden;
+      transition: 0.4s;
+      padding-top: 0;
+    }
+
+    .dropdown-content .menu-header {
       position: sticky;
       top: 0;
       padding: 20px;
-      font-size: 18px;
+      font-size: 20px;
       font-weight: bold;
       color: #fff;
-      background-color: #222;
-      text-align: center;
+      background-color: #000;
+      text-align: left; /* dính hẳn về bên trái */
       border-bottom: 1px solid #333;
-      z-index: 2100;
     }
 
     .dropdown-content a {
-      display: block;
-      padding: 15px 20px;
-      color: #fff;
+      padding: 15px 25px;
       text-decoration: none;
-      transition: 0.2s;
+      font-size: 18px;
+      color: white;
+      display: block;
+      transition: 0.3s;
     }
 
-    .dropdown-content a:hover {
-      background-color: #333;
-    }
-
+    .dropdown-content a:hover, 
     .dropdown-content a.active {
       background-color: #444;
-      font-weight: bold;
     }
 
-    /* Container nội dung */
-    .container {
-      max-width: 800px;
-      margin: 40px auto;
-      padding: 20px;
-      background-color: #000;
-      opacity: 0;
-      transition: opacity 0.5s ease;
+    /* Main content */
+    .content {
+      padding: 100px 20px 20px 20px;
     }
 
-    .container.show {
-      opacity: 1;
-    }
-
-    /* Overlay load */
-    #overlay {
+    /* Loading effect */
+    .loading-screen {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background-color: #000;
+      background: black;
       display: flex;
-      align-items: center;
       justify-content: center;
+      align-items: center;
       z-index: 3000;
     }
 
-    /* Spinner */
     .spinner {
       border: 6px solid #333;
-      border-top: 6px solid #fff;
+      border-top: 6px solid white;
       border-radius: 50%;
       width: 50px;
       height: 50px;
@@ -137,39 +108,16 @@
     }
 
     @keyframes spin {
-      0% { transform: rotate(0deg);}
-      100% { transform: rotate(360deg);}
-    }
-
-    /* Nút Discord */
-    button {
-      background-color: #5865F2;
-      color: white;
-      border: none;
-      padding: 12px 20px;
-      border-radius: 6px;
-      font-size: 16px;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-
-    button:hover {
-      background-color: #4752c4;
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
   </style>
 </head>
 <body>
-
-  <!-- Overlay Load -->
-  <div id="overlay">
-    <div class="spinner"></div>
+  <div class="header">
+    <span class="dropdown" onclick="toggleMenu()">☰</span>
+    <h1>SaKi-Hub</h1>
   </div>
-
-  <!-- Header -->
-  <header>
-    <button class="dropbtn" id="menuBtn">☰</button>
-    <div class="logo" id="logo">Saki-Hub</div>
-  </header>
 
   <!-- Sidebar menu -->
   <div class="dropdown-content" id="dropdownMenu">
@@ -179,99 +127,79 @@
     <a href="#" data-page="connect">Connect</a>
   </div>
 
-  <!-- Nội dung chính -->
-  <div class="container" id="mainContent">
-    <h1>Giới thiệu</h1>
-    <p>Toàn bộ web có nền màu đen, chữ trắng. Đây là nội dung Home mặc định.</p>
+  <div class="content" id="mainContent">
+    <h1>Home</h1>
+    <p>Chào mừng đến với SaKi-Hub! Giao diện nền đen, chữ trắng.</p>
+  </div>
+
+  <div class="loading-screen" id="loadingScreen">
+    <div class="spinner"></div>
   </div>
 
   <script>
-    const overlay = document.getElementById('overlay');
-    const menuBtn = document.getElementById('menuBtn');
-    const dropdownMenu = document.getElementById('dropdownMenu');
-    const mainContent = document.getElementById('mainContent');
-    const logo = document.getElementById('logo');
-    const links = dropdownMenu.querySelectorAll('a');
-
-    // Lấy trang hiện tại từ localStorage hoặc mặc định là home
-    let currentPage = localStorage.getItem("currentPage") || "home";
-
-    // Hide overlay sau khi load web
-    window.addEventListener('load', () => {
-      setTimeout(() => {
-        overlay.style.display = 'none';
-        mainContent.classList.add('show');
-        showPage(currentPage, false); // không lưu lại nữa
-      }, 1000);
-    });
+    const dropdownMenu = document.getElementById("dropdownMenu");
+    const mainContent = document.getElementById("mainContent");
+    const loadingScreen = document.getElementById("loadingScreen");
+    const links = document.querySelectorAll(".dropdown-content a");
 
     // Toggle sidebar
-    menuBtn.addEventListener('click', () => {
-      dropdownMenu.classList.toggle('show');
-    });
+    function toggleMenu() {
+      dropdownMenu.style.width = dropdownMenu.style.width === "250px" ? "0" : "250px";
+    }
 
-    // Click ngoài sidebar thì tắt
-    window.addEventListener('click', (e) => {
-      if (!menuBtn.contains(e.target) && !dropdownMenu.contains(e.target)) {
-        dropdownMenu.classList.remove('show');
-      }
-    });
-
-    // Hàm hiển thị nội dung
-    function showPage(page, save = true){
-      overlay.style.display = 'flex';
-      mainContent.classList.remove('show');
-
+    // Show loading animation
+    function showLoading(callback) {
+      loadingScreen.style.display = "flex";
       setTimeout(() => {
-        if(page === 'home'){
-          mainContent.innerHTML = `
-            <h1>Giới thiệu</h1>
-            <p>Toàn bộ web có nền màu đen, chữ trắng. Đây là nội dung Home.</p>
-          `;
-        } else if(page === 'script'){
-          mainContent.innerHTML = `
-            <h1>Script</h1>
-            <p>Đây là phần Script. Nội dung vẫn nền đen, chữ trắng.</p>
-          `;
-        } else if(page === 'connect'){
+        loadingScreen.style.display = "none";
+        callback();
+      }, 700);
+    }
+
+    // Load page content
+    function loadPage(page) {
+      showLoading(() => {
+        localStorage.setItem("currentPage", page);
+        links.forEach(link => link.classList.remove("active"));
+
+        if (page === "home") {
+          mainContent.innerHTML = `<h1>Home</h1><p>Chào mừng đến với SaKi-Hub! Giao diện nền đen, chữ trắng.</p>`;
+          document.querySelector('[data-page="home"]').classList.add("active");
+        } 
+        else if (page === "script") {
+          mainContent.innerHTML = `<h1>Script</h1><p>Đây là phần Script. Nội dung nền đen, chữ trắng.</p>`;
+          document.querySelector('[data-page="script"]').classList.add("active");
+        } 
+        else if (page === "connect") {
           mainContent.innerHTML = `
             <h1>Connect</h1>
             <p>Đây là phần Connect. Nội dung nền đen, chữ trắng.</p>
-            <button id="discordBtn">Join my server</button>
+            <button id="discordBtn">Vào server Discord</button>
           `;
-          // gắn sự kiện cho nút Discord
+          document.querySelector('[data-page="connect"]').classList.add("active");
           const discordBtn = document.getElementById("discordBtn");
           discordBtn.addEventListener("click", () => {
             window.open("https://discord.gg/cHrynR4E", "_blank");
           });
         }
-        // highlight menu
-        links.forEach(link => {
-          link.classList.remove("active");
-          if(link.getAttribute("data-page") === page){
-            link.classList.add("active");
-          }
-        });
-        if(save) localStorage.setItem("currentPage", page);
-        overlay.style.display = 'none';
-        mainContent.classList.add('show');
-      }, 800);
+      });
     }
 
-    // Menu click
+    // Event listener menu
     links.forEach(link => {
-      link.addEventListener('click', (e) => {
+      link.addEventListener("click", e => {
         e.preventDefault();
-        const page = link.getAttribute('data-page');
-        showPage(page);
-        dropdownMenu.classList.remove('show');
+        const page = e.target.getAttribute("data-page");
+        loadPage(page);
+        toggleMenu();
       });
     });
 
-    // Click logo về Home
-    logo.addEventListener('click', () => {
-      showPage('home');
-    });
+    // Giữ lại trang khi reload
+    window.onload = () => {
+      const savedPage = localStorage.getItem("currentPage") || "home";
+      loadPage(savedPage);
+    };
   </script>
 </body>
 </html>
