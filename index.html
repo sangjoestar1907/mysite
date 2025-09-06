@@ -17,7 +17,7 @@
     header {
       display: flex;
       align-items: center;
-      justify-content: center; /* logo ở giữa */
+      justify-content: center;
       padding: 10px 0;
       background-color: #111;
       position: sticky;
@@ -58,7 +58,7 @@
       position: fixed;
       top: 0;
       left: -220px;
-      background-color: #000; /* nền đen */
+      background-color: #000;
       overflow-x: hidden;
       transition: 0.3s;
       z-index: 2000;
@@ -82,11 +82,12 @@
 
     .sidebar-logo {
       color: #fff;
-      font-size: 18px;
+      font-size: 20px;
+      font-weight: bold;
       margin: 0;
-      padding: 15px 12px;
-      text-align: left;
-      background-color: #000; /* nền đen */
+      padding: 25px 12px;
+      text-align: center;
+      background-color: #000;
       border-bottom: 1px solid #111;
     }
 
@@ -206,7 +207,7 @@
         overlay.style.display = 'none';
         mainContent.classList.add('show');
 
-        // Load page từ URL nếu có
+        // Load page từ URL hoặc localStorage
         const page = new URLSearchParams(window.location.search).get("page") || localStorage.getItem("currentPage") || "home";
         showPage(page);
       }, 1000);
@@ -259,7 +260,6 @@
             <p>Đây là phần Connect. Nội dung nền đen, chữ trắng.</p>
             <button id="discordBtn">Join my server</button>
           `;
-          // gắn sự kiện cho nút Discord
           const discordBtn = document.getElementById("discordBtn");
           discordBtn.addEventListener("click", () => {
             window.open("https://discord.gg/cHrynR4E", "_blank");
@@ -270,7 +270,6 @@
 
         // Lưu page hiện tại
         localStorage.setItem("currentPage", page);
-        // Cập nhật URL
         const url = new URL(window.location);
         url.searchParams.set('page', page);
         window.history.replaceState({}, '', url);
