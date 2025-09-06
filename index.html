@@ -17,18 +17,13 @@
     header {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      padding: 10px;
+      justify-content: center;
+      padding: 10px 0;
       background-color: #111;
       position: sticky;
       top: 0;
       z-index: 1000;
-    }
-
-    .left {
-      display: flex;
-      align-items: center;
-      gap: 10px;
+      position: relative;
     }
 
     .logo {
@@ -39,16 +34,21 @@
 
     /* Nút ba gạch */
     .dropbtn {
-      background-color: #222;
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      background-color: #000;
       color: white;
       padding: 10px 16px;
       font-size: 20px;
       border: none;
       cursor: pointer;
+      border-radius: 0;
     }
 
     .dropbtn:hover {
-      background-color: #333;
+      background-color: #222;
     }
 
     /* Sidebar */
@@ -58,22 +58,20 @@
       position: fixed;
       top: 0;
       left: -200px;
-      background-color: #000;
+      background-color: #111;
+      overflow-x: hidden;
       transition: 0.3s;
       z-index: 2000;
-      padding-top: 50px;
+      padding-top: 0;
     }
 
-    .dropdown-content h2 {
-      color: #fff;
-      text-align: left;
-      padding: 10px 20px;
-      margin: 0;
+    .dropdown-content.show {
+      left: 0;
     }
 
     .dropdown-content a {
       display: block;
-      padding: 12px 20px;
+      padding: 15px 20px;
       color: #fff;
       text-decoration: none;
     }
@@ -82,8 +80,15 @@
       background-color: #333;
     }
 
-    .dropdown-content.show {
-      left: 0;
+    /* Logo trong dropdown */
+    .sidebar-logo {
+      color: #fff;
+      font-size: 18px;
+      margin: 0;
+      padding: 15px 12px;
+      text-align: left;
+      background-color: #000;
+      border-bottom: 1px solid #222;
     }
 
     /* Container nội dung */
@@ -129,14 +134,14 @@
       100% { transform: rotate(360deg);}
     }
 
-    /* Nút Discord + Music */
+    /* Nút Discord */
     button {
       background-color: #5865F2;
       color: white;
       border: none;
-      padding: 8px 16px;
+      padding: 12px 20px;
       border-radius: 6px;
-      font-size: 14px;
+      font-size: 16px;
       cursor: pointer;
       transition: 0.2s;
     }
@@ -145,12 +150,19 @@
       background-color: #4752c4;
     }
 
-    /* Nút nhạc ở góc phải */
+    /* Nút bật/tắt nhạc */
     #musicBtn {
       position: absolute;
       right: 10px;
       top: 50%;
       transform: translateY(-50%);
+      background-color: #222;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    #musicBtn:hover {
+      background-color: #444;
     }
   </style>
 </head>
@@ -163,26 +175,21 @@
 
   <!-- Header -->
   <header>
-    <div class="left">
-      <button class="dropbtn" id="menuBtn">☰</button>
-      <div class="logo" id="logo">Saki-Hub</div>
-    </div>
-    <button id="musicBtn">Phát nhạc</button>
+    <button class="dropbtn" id="menuBtn">☰</button>
+    <div class="logo" id="logo">Saki-Hub</div>
+    <button id="musicBtn">🔊</button>
   </header>
 
   <!-- Sidebar menu -->
   <div class="dropdown-content" id="dropdownMenu">
-    <h2>Saki-Hub</h2>
+    <h2 class="sidebar-logo">Saki-Hub</h2>
     <a href="#" data-page="home">Home</a>
     <a href="#" data-page="script">Script</a>
     <a href="#" data-page="connect">Connect</a>
   </div>
 
   <!-- Nội dung chính -->
-  <div class="container" id="mainContent">
-    <h1>Giới thiệu</h1>
-    <p>Toàn bộ web có nền màu đen, chữ trắng. Đây là nội dung Home mặc định.</p>
-  </div>
+  <div class="container" id="mainContent"></div>
 
   <!-- Nhạc nền -->
   <audio id="bgm" loop>
@@ -195,18 +202,29 @@
     const dropdownMenu = document.getElementById('dropdownMenu');
     const mainContent = document.getElementById('mainContent');
     const logo = document.getElementById('logo');
-    const bgm = document.getElementById('bgm');
     const musicBtn = document.getElementById('musicBtn');
+    const bgm = document.getElementById('bgm');
 
-    let currentPage = localStorage.getItem("page") || "home";
-    let playing = false;
+    let isPlaying = false;
 
-    // Hide overlay sau khi load web
+    // Toggle nhạc
+    musicBtn.addEventListener("click", () => {
+      if (isPlaying) {
+        bgm.pause();
+        musicBtn.textContent = "🔇";
+      } else {
+        bgm.play();
+        musicBtn.textContent = "🔊";
+      }
+      isPlaying = !isPlaying;
+    });
+
+    // Hide overlay khi load
     window.addEventListener('load', () => {
       setTimeout(() => {
         overlay.style.display = 'none';
         mainContent.classList.add('show');
-        showPage(currentPage, false);
+        navigateTo(window.location.pathname.replace("/", "") || "home", false);
       }, 1000);
     });
 
@@ -222,39 +240,43 @@
       }
     });
 
-    // Hàm hiển thị nội dung
-    function showPage(page, save=true){
+    // Điều hướng nội dung
+    function showPage(page) {
+      if(page === 'home'){
+        mainContent.innerHTML = `
+          <h1>Giới thiệu</h1>
+          <p>Toàn bộ web có nền màu đen, chữ trắng. Đây là nội dung Home.</p>
+        `;
+      } else if(page === 'script'){
+        mainContent.innerHTML = `
+          <h1>Script</h1>
+          <p>Đây là phần Script. Nội dung vẫn nền đen, chữ trắng.</p>
+        `;
+      } else if(page === 'connect'){
+        mainContent.innerHTML = `
+          <h1>Connect</h1>
+          <p>Đây là phần Connect. Nội dung nền đen, chữ trắng.</p>
+          <button id="discordBtn">Join Discord</button>
+        `;
+        const discordBtn = document.getElementById("discordBtn");
+        discordBtn.addEventListener("click", () => {
+          window.open("https://discord.gg/cHrynR4E", "_blank");
+        });
+      }
+    }
+
+    function navigateTo(page, push=true) {
       overlay.style.display = 'flex';
       mainContent.classList.remove('show');
-
       setTimeout(() => {
-        if(page === 'home'){
-          mainContent.innerHTML = `
-            <h1>Giới thiệu</h1>
-            <p>Toàn bộ web có nền màu đen, chữ trắng. Đây là nội dung Home.</p>
-          `;
-        } else if(page === 'script'){
-          mainContent.innerHTML = `
-            <h1>Script</h1>
-            <p>Đây là phần Script. Nội dung vẫn nền đen, chữ trắng.</p>
-          `;
-        } else if(page === 'connect'){
-          mainContent.innerHTML = `
-            <h1>Connect</h1>
-            <p>Đây là phần Connect. Nội dung nền đen, chữ trắng.</p>
-            <button id="discordBtn">Vào Discord</button>
-          `;
-          document.getElementById("discordBtn").addEventListener("click", () => {
-            window.open("https://discord.gg/cHrynR4E", "_blank");
-          });
-        }
+        showPage(page);
         overlay.style.display = 'none';
         mainContent.classList.add('show');
-        if(save) {
-          currentPage = page;
-          localStorage.setItem("page", page);
-        }
-      }, 800);
+      }, 500);
+
+      if(push){
+        window.history.pushState({ page }, "", "/" + page);
+      }
     }
 
     // Menu click
@@ -263,26 +285,23 @@
       link.addEventListener('click', (e) => {
         e.preventDefault();
         const page = link.getAttribute('data-page');
-        showPage(page);
+        navigateTo(page);
         dropdownMenu.classList.remove('show');
       });
     });
 
     // Click logo về Home
     logo.addEventListener('click', () => {
-      showPage('home');
+      navigateTo('home');
     });
 
-    // Nút nhạc
-    musicBtn.addEventListener("click", () => {
-      if (playing) {
-        bgm.pause();
-        musicBtn.textContent = "Phát nhạc";
+    // Xử lý nút back/forward
+    window.addEventListener("popstate", (e) => {
+      if (e.state && e.state.page) {
+        navigateTo(e.state.page, false);
       } else {
-        bgm.play();
-        musicBtn.textContent = "Tắt nhạc";
+        navigateTo("home", false);
       }
-      playing = !playing;
     });
   </script>
 </body>
