@@ -58,31 +58,28 @@
       position: fixed;
       top: 0;
       left: -200px;
-      background-color: #111;
-      overflow-x: hidden;
+      background-color: #000;
       transition: 0.3s;
       z-index: 2000;
-      padding-top: 20px;
+      padding-top: 50px;
+    }
+
+    .dropdown-content h2 {
+      color: #fff;
+      text-align: left;
+      padding: 10px 20px;
+      margin: 0;
     }
 
     .dropdown-content a {
       display: block;
-      padding: 12px 18px;
+      padding: 12px 20px;
       color: #fff;
       text-decoration: none;
     }
 
-    .dropdown-content a:hover,
-    .dropdown-content a.active {
+    .dropdown-content a:hover {
       background-color: #333;
-    }
-
-    .dropdown-content .title {
-      font-size: 18px;
-      font-weight: bold;
-      padding: 15px 18px;
-      border-bottom: 1px solid #333;
-      margin-bottom: 10px;
     }
 
     .dropdown-content.show {
@@ -132,7 +129,7 @@
       100% { transform: rotate(360deg);}
     }
 
-    /* Nút Discord */
+    /* Nút Discord + Music */
     button {
       background-color: #5865F2;
       color: white;
@@ -141,6 +138,7 @@
       border-radius: 6px;
       font-size: 16px;
       cursor: pointer;
+      margin-top: 10px;
       transition: 0.2s;
     }
 
@@ -164,10 +162,10 @@
 
   <!-- Sidebar menu -->
   <div class="dropdown-content" id="dropdownMenu">
-    <div class="title">Saki-Hub</div>
-    <a href="/home" data-page="home">Home</a>
-    <a href="/script" data-page="script">Script</a>
-    <a href="/connect" data-page="connect">Connect</a>
+    <h2>Saki-Hub</h2>
+    <a href="#" data-page="home">Home</a>
+    <a href="#" data-page="script">Script</a>
+    <a href="#" data-page="connect">Connect</a>
   </div>
 
   <!-- Nội dung chính -->
@@ -176,20 +174,29 @@
     <p>Toàn bộ web có nền màu đen, chữ trắng. Đây là nội dung Home mặc định.</p>
   </div>
 
+  <!-- Nhạc nền -->
+  <audio id="bgm" loop>
+    <source src="bgm.mp3" type="audio/mpeg">
+  </audio>
+
   <script>
     const overlay = document.getElementById('overlay');
     const menuBtn = document.getElementById('menuBtn');
     const dropdownMenu = document.getElementById('dropdownMenu');
     const mainContent = document.getElementById('mainContent');
     const logo = document.getElementById('logo');
+    const bgm = document.getElementById('bgm');
+
+    let currentPage = localStorage.getItem("page") || "home";
+    let playing = false;
 
     // Hide overlay sau khi load web
     window.addEventListener('load', () => {
       setTimeout(() => {
         overlay.style.display = 'none';
         mainContent.classList.add('show');
-        handleRoute(location.pathname);
-      }, 800);
+        showPage(currentPage, false);
+      }, 1000);
     });
 
     // Toggle sidebar
@@ -204,8 +211,8 @@
       }
     });
 
-    // Hàm hiển thị nội dung theo trang
-    function showPage(page, pushState = true){
+    // Hàm hiển thị nội dung
+    function showPage(page, save=true){
       overlay.style.display = 'flex';
       mainContent.classList.remove('show');
 
@@ -224,35 +231,36 @@
           mainContent.innerHTML = `
             <h1>Connect</h1>
             <p>Đây là phần Connect. Nội dung nền đen, chữ trắng.</p>
-            <button id="discordBtn">Join Discord</button>
+            <button id="discordBtn">Vào Discord</button><br>
+            <button id="musicBtn">Phát nhạc</button>
           `;
-          const discordBtn = document.getElementById("discordBtn");
-          discordBtn.addEventListener("click", () => {
+          // nút Discord
+          document.getElementById("discordBtn").addEventListener("click", () => {
             window.open("https://discord.gg/cHrynR4E", "_blank");
           });
+          // nút Music
+          const musicBtn = document.getElementById("musicBtn");
+          musicBtn.addEventListener("click", () => {
+            if (playing) {
+              bgm.pause();
+              musicBtn.textContent = "Phát nhạc";
+            } else {
+              bgm.play();
+              musicBtn.textContent = "Tắt nhạc";
+            }
+            playing = !playing;
+          });
         }
-
-        // Đổi URL bằng history API
-        if(pushState){
-          history.pushState({page}, "", "/" + page);
-        }
-
-        highlightMenu(page);
-
         overlay.style.display = 'none';
         mainContent.classList.add('show');
-      }, 500);
+        if(save) {
+          currentPage = page;
+          localStorage.setItem("page", page);
+        }
+      }, 800);
     }
 
-    // Highlight menu
-    function highlightMenu(page){
-      const links = dropdownMenu.querySelectorAll('a');
-      links.forEach(link => {
-        link.classList.toggle('active', link.getAttribute('data-page') === page);
-      });
-    }
-
-    // Điều hướng khi click menu
+    // Menu click
     const links = dropdownMenu.querySelectorAll('a');
     links.forEach(link => {
       link.addEventListener('click', (e) => {
@@ -263,27 +271,10 @@
       });
     });
 
-    // Logo click về home
+    // Click logo về Home
     logo.addEventListener('click', () => {
       showPage('home');
     });
-
-    // Xử lý khi bấm Back/Forward
-    window.addEventListener('popstate', (event) => {
-      const page = event.state?.page || 'home';
-      showPage(page, false);
-    });
-
-    // Xử lý route ban đầu
-    function handleRoute(path){
-      if(path === '/script'){
-        showPage('script', false);
-      } else if(path === '/connect'){
-        showPage('connect', false);
-      } else {
-        showPage('home', false);
-      }
-    }
   </script>
 </body>
 </html>
