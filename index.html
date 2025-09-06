@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Saki-Hub</title>
+  <title>Sang</title>
   <style>
     body {
       margin: 0;
@@ -11,39 +11,40 @@
       font-family: Arial, sans-serif;
       background-color: #000;
       color: #fff;
-      overflow-x: hidden;
     }
 
     /* Header */
     header {
       display: flex;
       align-items: center;
-      justify-content: space-between; /* đẩy logo ra giữa */
-      padding: 10px 20px;
+      justify-content: center; /* logo ở giữa */
+      padding: 10px 0;
       background-color: #111;
       position: sticky;
       top: 0;
       z-index: 1000;
+      position: relative;
     }
 
     .logo {
       font-size: 20px;
       font-weight: bold;
-      color: #fff;
-      text-align: center;
-      flex: 1;
       cursor: pointer;
     }
 
     /* Nút ba gạch */
     .dropbtn {
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
       background-color: #222;
       color: white;
       padding: 10px 16px;
       font-size: 20px;
       border: none;
       cursor: pointer;
-      border-radius: 5px;
+      border-radius: 0;
     }
 
     .dropbtn:hover {
@@ -51,33 +52,32 @@
     }
 
     /* Sidebar */
-    .sidebar {
+    .dropdown-content {
+      height: 100vh;
+      width: 220px;
       position: fixed;
       top: 0;
-      left: -220px; /* Ẩn ở bên trái */
-      width: 220px;
-      height: 100%;
+      left: -220px; /* ẩn bên trái */
       background-color: #111;
-      box-shadow: 2px 0 8px rgba(0,0,0,0.5);
-      padding-top: 60px; /* chừa chỗ header */
-      transition: left 0.3s ease;
-      z-index: 999;
+      overflow-x: hidden;
+      transition: 0.3s;
+      z-index: 2000;
+      padding-top: 60px; /* để không đè lên header */
     }
 
-    .sidebar.show {
-      left: 0;
-    }
-
-    .sidebar a {
+    .dropdown-content a {
       display: block;
-      color: #fff;
       padding: 15px 20px;
+      color: #fff;
       text-decoration: none;
-      font-size: 18px;
     }
 
-    .sidebar a:hover {
+    .dropdown-content a:hover {
       background-color: #333;
+    }
+
+    .dropdown-content.show {
+      left: 0; /* trượt vào */
     }
 
     /* Container nội dung */
@@ -94,26 +94,18 @@
       opacity: 1;
     }
 
-    h1, h2 { color: #fff; }
-    p { color: #ccc; line-height: 1.6; }
-
     /* Overlay load */
     #overlay {
       position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
       background-color: #000;
       display: flex;
       align-items: center;
       justify-content: center;
-      z-index: 2000;
-      opacity: 1;
-      transition: opacity 0.4s ease;
-    }
-
-    #overlay.hidden {
-      opacity: 0;
-      pointer-events: none;
+      z-index: 3000;
     }
 
     /* Spinner */
@@ -145,8 +137,8 @@
     <div class="logo" id="logo">Saki-Hub</div>
   </header>
 
-  <!-- Sidebar -->
-  <div class="sidebar" id="sidebarMenu">
+  <!-- Sidebar menu -->
+  <div class="dropdown-content" id="dropdownMenu">
     <a href="#" data-page="home">Home</a>
     <a href="#" data-page="script">Script</a>
     <a href="#" data-page="connect">Connect</a>
@@ -154,46 +146,46 @@
 
   <!-- Nội dung chính -->
   <div class="container" id="mainContent">
-    <h1> Giới thiệu</h1>
+    <h1>Giới thiệu</h1>
     <p>Toàn bộ web có nền màu đen, chữ trắng. Đây là nội dung Home mặc định.</p>
   </div>
 
   <script>
     const overlay = document.getElementById('overlay');
     const menuBtn = document.getElementById('menuBtn');
-    const sidebarMenu = document.getElementById('sidebarMenu');
+    const dropdownMenu = document.getElementById('dropdownMenu');
     const mainContent = document.getElementById('mainContent');
     const logo = document.getElementById('logo');
 
     // Hide overlay sau khi load web
     window.addEventListener('load', () => {
       setTimeout(() => {
-        overlay.classList.add('hidden');
+        overlay.style.display = 'none';
         mainContent.classList.add('show');
       }, 1000);
     });
 
     // Toggle sidebar
     menuBtn.addEventListener('click', () => {
-      sidebarMenu.classList.toggle('show');
+      dropdownMenu.classList.toggle('show');
     });
 
-    // Click ngoài sidebar sẽ tắt
+    // Click ngoài sidebar thì tắt
     window.addEventListener('click', (e) => {
-      if (!menuBtn.contains(e.target) && !sidebarMenu.contains(e.target)) {
-        sidebarMenu.classList.remove('show');
+      if (!menuBtn.contains(e.target) && !dropdownMenu.contains(e.target)) {
+        dropdownMenu.classList.remove('show');
       }
     });
 
     // Hàm hiển thị nội dung
     function showPage(page){
-      overlay.classList.remove('hidden'); 
+      overlay.style.display = 'flex';
       mainContent.classList.remove('show');
 
       setTimeout(() => {
         if(page === 'home'){
           mainContent.innerHTML = `
-            <h1> Giới thiệu</h1>
+            <h1>Giới thiệu</h1>
             <p>Toàn bộ web có nền màu đen, chữ trắng. Đây là nội dung Home.</p>
           `;
         } else if(page === 'script'){
@@ -207,19 +199,19 @@
             <p>Đây là phần Connect. Nội dung nền đen, chữ trắng.</p>
           `;
         }
+        overlay.style.display = 'none';
         mainContent.classList.add('show');
-        overlay.classList.add('hidden');
       }, 800);
     }
 
-    // Sidebar click
-    const links = sidebarMenu.querySelectorAll('a');
+    // Menu click
+    const links = dropdownMenu.querySelectorAll('a');
     links.forEach(link => {
       link.addEventListener('click', (e) => {
         e.preventDefault();
         const page = link.getAttribute('data-page');
         showPage(page);
-        sidebarMenu.classList.remove('show');
+        dropdownMenu.classList.remove('show');
       });
     });
 
