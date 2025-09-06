@@ -9,8 +9,9 @@
       margin: 0;
       padding: 0;
       font-family: Arial, sans-serif;
-      background-color: #000000;
-      color: #ffffff;
+      background-color: #000;
+      color: #fff;
+      overflow-x: hidden; /* chặn cuộn ngang khi mở sidebar */
     }
 
     /* Header */
@@ -19,27 +20,22 @@
       align-items: center;
       justify-content: center;
       padding: 10px 20px;
-      background-color: #111111;
+      background-color: #111;
       position: sticky;
       top: 0;
-      z-index: 10;
+      z-index: 1000;
     }
 
     .logo {
       font-size: 20px;
       font-weight: bold;
-      color: #ffffff;
+      color: #fff;
       text-align: center;
       flex: 1;
       cursor: pointer;
     }
 
-    /* Drop-down */
-    .dropdown {
-      position: absolute;
-      left: 20px;
-    }
-
+    /* Nút ba gạch */
     .dropbtn {
       background-color: #222;
       color: white;
@@ -48,33 +44,41 @@
       border: none;
       cursor: pointer;
       border-radius: 5px;
+      position: absolute;
+      left: 20px;
     }
 
     .dropbtn:hover {
       background-color: #333;
     }
 
-    .dropdown-content {
-      display: none;
-      position: absolute;
-      left: 0;
+    /* Sidebar */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: -220px; /* Ẩn ở bên trái */
+      width: 220px;
+      height: 100%;
       background-color: #111;
-      min-width: 140px;
-      box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.5);
-      z-index: 1;
-      border-radius: 5px;
-      overflow: hidden;
-      margin-top: 5px;
+      box-shadow: 2px 0 8px rgba(0,0,0,0.5);
+      padding-top: 60px; /* chừa chỗ header */
+      transition: left 0.3s ease;
+      z-index: 999;
     }
 
-    .dropdown-content a {
-      color: #fff;
-      padding: 10px 16px;
-      text-decoration: none;
+    .sidebar.show {
+      left: 0; /* trượt vào */
+    }
+
+    .sidebar a {
       display: block;
+      color: #fff;
+      padding: 15px 20px;
+      text-decoration: none;
+      font-size: 18px;
     }
 
-    .dropdown-content a:hover {
+    .sidebar a:hover {
       background-color: #333;
     }
 
@@ -83,7 +87,7 @@
       max-width: 800px;
       margin: 40px auto;
       padding: 20px;
-      background-color: #000000;
+      background-color: #000;
       opacity: 0;
       transition: opacity 0.5s ease;
     }
@@ -92,27 +96,26 @@
       opacity: 1;
     }
 
-    h1, h2 {
-      color: #ffffff;
-    }
-
-    p {
-      color: #cccccc;
-      line-height: 1.6;
-    }
+    h1, h2 { color: #fff; }
+    p { color: #ccc; line-height: 1.6; }
 
     /* Overlay load */
     #overlay {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: #000000;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-color: #000;
       display: flex;
       align-items: center;
       justify-content: center;
-      z-index: 999;
+      z-index: 2000;
+      opacity: 1;
+      transition: opacity 0.4s ease;
+    }
+
+    #overlay.hidden {
+      opacity: 0;
+      pointer-events: none;
     }
 
     /* Spinner */
@@ -140,17 +143,16 @@
 
   <!-- Header -->
   <header>
-    <div class="dropdown">
-      <button class="dropbtn" id="menuBtn">☰</button>
-      <div class="dropdown-content" id="dropdownMenu">
-        <a href="#" data-page="home">Home</a>
-        <a href="#" data-page="script">Script</a>
-        <a href="#" data-page="connect">Connect</a>
-      </div>
-    </div>
-
+    <button class="dropbtn" id="menuBtn">☰</button>
     <div class="logo" id="logo">Saki-Hub</div>
   </header>
+
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebarMenu">
+    <a href="#" data-page="home">Home</a>
+    <a href="#" data-page="script">Script</a>
+    <a href="#" data-page="connect">Connect</a>
+  </div>
 
   <!-- Nội dung chính -->
   <div class="container" id="mainContent">
@@ -161,33 +163,33 @@
   <script>
     const overlay = document.getElementById('overlay');
     const menuBtn = document.getElementById('menuBtn');
-    const dropdownMenu = document.getElementById('dropdownMenu');
+    const sidebarMenu = document.getElementById('sidebarMenu');
     const mainContent = document.getElementById('mainContent');
     const logo = document.getElementById('logo');
 
     // Hide overlay sau khi load web
     window.addEventListener('load', () => {
       setTimeout(() => {
-        overlay.style.display = 'none';
+        overlay.classList.add('hidden');
         mainContent.classList.add('show');
-      }, 1000); // thời gian hiển thị spinner 1s
+      }, 1000);
     });
 
-    // Toggle menu mở/đóng
+    // Toggle sidebar
     menuBtn.addEventListener('click', () => {
-      dropdownMenu.style.display = (dropdownMenu.style.display === 'block') ? 'none' : 'block';
+      sidebarMenu.classList.toggle('show');
     });
 
-    // Click ngoài menu sẽ tắt
-    window.addEventListener('click', function(e){
-      if(!menuBtn.contains(e.target) && !dropdownMenu.contains(e.target)){
-        dropdownMenu.style.display = 'none';
+    // Click ngoài sidebar sẽ tắt
+    window.addEventListener('click', (e) => {
+      if (!menuBtn.contains(e.target) && !sidebarMenu.contains(e.target)) {
+        sidebarMenu.classList.remove('show');
       }
     });
 
-    // Hàm hiển thị nội dung với overlay load
+    // Hàm hiển thị nội dung
     function showPage(page){
-      overlay.style.display = 'flex';  // bật overlay
+      overlay.classList.remove('hidden'); 
       mainContent.classList.remove('show');
 
       setTimeout(() => {
@@ -203,23 +205,23 @@
           `;
         } else if(page === 'connect'){
           mainContent.innerHTML = `
-            <h1> Connect</h1>
+            <h1>Connect</h1>
             <p>Đây là phần Connect. Nội dung nền đen, chữ trắng.</p>
           `;
         }
-        overlay.style.display = 'none';
         mainContent.classList.add('show');
-      }, 800); // thời gian spinner hiển thị khi chuyển trang
+        overlay.classList.add('hidden');
+      }, 800);
     }
 
-    // Menu click
-    const links = dropdownMenu.querySelectorAll('a');
+    // Sidebar click
+    const links = sidebarMenu.querySelectorAll('a');
     links.forEach(link => {
       link.addEventListener('click', (e) => {
         e.preventDefault();
         const page = link.getAttribute('data-page');
         showPage(page);
-        dropdownMenu.style.display = 'none';
+        sidebarMenu.classList.remove('show');
       });
     });
 
