@@ -7,6 +7,7 @@
   <style>
     body {
       margin: 0;
+      padding: 0;
       font-family: Arial, sans-serif;
       background-color: #000;
       color: #fff;
@@ -16,7 +17,7 @@
     header {
       display: flex;
       align-items: center;
-      justify-content: center;
+      justify-content: center; /* logo ở giữa */
       padding: 10px 0;
       background-color: #111;
       position: sticky;
@@ -29,9 +30,6 @@
       font-size: 20px;
       font-weight: bold;
       cursor: pointer;
-      background-color: #000;
-      padding: 6px 12px;
-      border-radius: 4px;
     }
 
     /* Nút ba gạch */
@@ -40,7 +38,7 @@
       left: 0;
       top: 50%;
       transform: translateY(-50%);
-      background-color: #000;
+      background-color: #222;
       color: white;
       padding: 10px 16px;
       font-size: 20px;
@@ -50,25 +48,7 @@
     }
 
     .dropbtn:hover {
-      background-color: #111;
-    }
-
-    /* Nút nhạc góc phải */
-    #musicBtn {
-      position: absolute;
-      right: 10px;
-      top: 50%;
-      transform: translateY(-50%);
-      background-color: #000;
-      color: #fff;
-      border: none;
-      padding: 8px 12px;
-      cursor: pointer;
-      border-radius: 4px;
-    }
-
-    #musicBtn:hover {
-      background-color: #111;
+      background-color: #333;
     }
 
     /* Sidebar */
@@ -78,11 +58,22 @@
       position: fixed;
       top: 0;
       left: -220px;
-      background-color: #000;
+      background-color: #000; /* nền đen */
       overflow-x: hidden;
       transition: 0.3s;
       z-index: 2000;
       padding-top: 60px;
+    }
+
+    .dropdown-content a {
+      display: block;
+      padding: 15px 20px;
+      color: #fff;
+      text-decoration: none;
+    }
+
+    .dropdown-content a:hover {
+      background-color: #111;
     }
 
     .dropdown-content.show {
@@ -95,25 +86,14 @@
       margin: 0;
       padding: 15px 12px;
       text-align: left;
-      background-color: #000;
+      background-color: #000; /* nền đen */
       border-bottom: 1px solid #111;
-    }
-
-    .dropdown-content a {
-      display: block;
-      padding: 12px 20px;
-      color: #fff;
-      text-decoration: none;
-    }
-
-    .dropdown-content a:hover {
-      background-color: #111;
     }
 
     /* Container nội dung */
     .container {
       max-width: 800px;
-      margin: 70px auto 40px auto;
+      margin: 40px auto;
       padding: 20px;
       background-color: #000;
       opacity: 0;
@@ -154,10 +134,10 @@
     }
 
     /* Nút Discord */
-    button.discordBtn {
-      background-color: #000;
+    button {
+      background-color: #5865F2;
       color: white;
-      border: 1px solid #111;
+      border: none;
       padding: 12px 20px;
       border-radius: 6px;
       font-size: 16px;
@@ -165,8 +145,16 @@
       transition: 0.2s;
     }
 
-    button.discordBtn:hover {
-      background-color: #111;
+    button:hover {
+      background-color: #4752c4;
+    }
+
+    /* Nút Music */
+    #musicBtn {
+      position: fixed;
+      right: 20px;
+      top: 15px;
+      z-index: 4000;
     }
   </style>
 </head>
@@ -181,9 +169,11 @@
   <header>
     <button class="dropbtn" id="menuBtn">☰</button>
     <div class="logo" id="logo">Saki-Hub</div>
-    <button id="musicBtn">🔊</button>
-    <audio id="bgMusic" src="music.mp3" loop></audio>
   </header>
+
+  <!-- Nút phát nhạc -->
+  <button id="musicBtn">▶️</button>
+  <audio id="bgm" src="bgm.mp3" loop></audio>
 
   <!-- Sidebar menu -->
   <div class="dropdown-content" id="dropdownMenu">
@@ -205,14 +195,20 @@
     const dropdownMenu = document.getElementById('dropdownMenu');
     const mainContent = document.getElementById('mainContent');
     const logo = document.getElementById('logo');
+
     const musicBtn = document.getElementById('musicBtn');
-    const bgMusic = document.getElementById('bgMusic');
+    const bgm = document.getElementById('bgm');
+    let isPlaying = false;
 
     // Hide overlay sau khi load web
     window.addEventListener('load', () => {
       setTimeout(() => {
         overlay.style.display = 'none';
         mainContent.classList.add('show');
+
+        // Load page từ URL nếu có
+        const page = new URLSearchParams(window.location.search).get("page") || localStorage.getItem("currentPage") || "home";
+        showPage(page);
       }, 1000);
     });
 
@@ -228,14 +224,16 @@
       }
     });
 
-    // Bật/tắt nhạc
+    // Nút phát nhạc
     musicBtn.addEventListener('click', () => {
-      if(bgMusic.paused){
-        bgMusic.play();
-        musicBtn.textContent = "🔊"; // nhạc đang phát
+      if(isPlaying){
+        bgm.pause();
+        isPlaying = false;
+        musicBtn.textContent = "▶️";
       } else {
-        bgMusic.pause();
-        musicBtn.textContent = "🔇"; // nhạc tắt
+        bgm.play();
+        isPlaying = true;
+        musicBtn.textContent = "⏸️";
       }
     });
 
@@ -259,7 +257,7 @@
           mainContent.innerHTML = `
             <h1>Connect</h1>
             <p>Đây là phần Connect. Nội dung nền đen, chữ trắng.</p>
-            <button class="discordBtn" id="discordBtn">Join Discord</button>
+            <button id="discordBtn">Join my server</button>
           `;
           // gắn sự kiện cho nút Discord
           const discordBtn = document.getElementById("discordBtn");
@@ -269,6 +267,13 @@
         }
         overlay.style.display = 'none';
         mainContent.classList.add('show');
+
+        // Lưu page hiện tại
+        localStorage.setItem("currentPage", page);
+        // Cập nhật URL
+        const url = new URL(window.location);
+        url.searchParams.set('page', page);
+        window.history.replaceState({}, '', url);
       }, 800);
     }
 
@@ -280,21 +285,13 @@
         const page = link.getAttribute('data-page');
         showPage(page);
         dropdownMenu.classList.remove('show');
-        localStorage.setItem('currentPage', page);
       });
     });
 
     // Click logo về Home
     logo.addEventListener('click', () => {
       showPage('home');
-      localStorage.setItem('currentPage', 'home');
     });
-
-    // Giữ trang khi reload
-    const currentPage = localStorage.getItem('currentPage');
-    if(currentPage){
-      showPage(currentPage);
-    }
   </script>
 </body>
 </html>
