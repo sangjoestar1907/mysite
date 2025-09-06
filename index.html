@@ -19,7 +19,7 @@
       align-items: center;
       justify-content: center;
       padding: 10px 0;
-      background-color: #111;
+      background-color: #000; /* nền header màu đen */
       position: sticky;
       top: 0;
       z-index: 1000;
@@ -30,6 +30,9 @@
       font-size: 20px;
       font-weight: bold;
       cursor: pointer;
+      color: #fff; /* chữ logo trắng */
+      background-color: #000; /* nền logo đen */
+      padding: 5px 10px;
     }
 
     /* Nút ba gạch */
@@ -38,7 +41,7 @@
       left: 0;
       top: 50%;
       transform: translateY(-50%);
-      background-color: #222;
+      background-color: #000; /* nền nút đen */
       color: white;
       padding: 10px 16px;
       font-size: 20px;
@@ -48,7 +51,7 @@
     }
 
     .dropbtn:hover {
-      background-color: #333;
+      background-color: #111;
     }
 
     /* Sidebar */
@@ -58,7 +61,7 @@
       position: fixed;
       top: 0;
       left: -220px;
-      background-color: #000;
+      background-color: #000; /* nền đen */
       overflow-x: hidden;
       transition: 0.3s;
       z-index: 2000;
@@ -207,7 +210,6 @@
         overlay.style.display = 'none';
         mainContent.classList.add('show');
 
-        // Load page từ URL hoặc localStorage
         const page = new URLSearchParams(window.location.search).get("page") || localStorage.getItem("currentPage") || "home";
         showPage(page);
       }, 1000);
@@ -268,7 +270,6 @@
         overlay.style.display = 'none';
         mainContent.classList.add('show');
 
-        // Lưu page hiện tại
         localStorage.setItem("currentPage", page);
         const url = new URL(window.location);
         url.searchParams.set('page', page);
