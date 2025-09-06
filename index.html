@@ -59,10 +59,26 @@
       top: 0;
       left: -220px;
       background-color: #111;
-      overflow-x: hidden;
+      overflow-y: auto;
       transition: 0.3s;
       z-index: 2000;
-      padding-top: 60px;
+    }
+
+    .dropdown-content.show {
+      left: 0;
+    }
+
+    .menu-header {
+      position: sticky;
+      top: 0;
+      padding: 20px;
+      font-size: 18px;
+      font-weight: bold;
+      color: #fff;
+      background-color: #222;
+      text-align: center;
+      border-bottom: 1px solid #333;
+      z-index: 2100;
     }
 
     .dropdown-content a {
@@ -70,6 +86,7 @@
       padding: 15px 20px;
       color: #fff;
       text-decoration: none;
+      transition: 0.2s;
     }
 
     .dropdown-content a:hover {
@@ -77,11 +94,8 @@
     }
 
     .dropdown-content a.active {
-      background-color: #444; /* menu đang chọn */
-    }
-
-    .dropdown-content.show {
-      left: 0;
+      background-color: #444;
+      font-weight: bold;
     }
 
     /* Container nội dung */
@@ -129,7 +143,7 @@
 
     /* Nút Discord */
     button {
-      background-color: #5865F2; /* màu Discord */
+      background-color: #5865F2;
       color: white;
       border: none;
       padding: 12px 20px;
@@ -159,6 +173,7 @@
 
   <!-- Sidebar menu -->
   <div class="dropdown-content" id="dropdownMenu">
+    <div class="menu-header">SaKi-Hub</div>
     <a href="#" data-page="home">Home</a>
     <a href="#" data-page="script">Script</a>
     <a href="#" data-page="connect">Connect</a>
@@ -178,7 +193,32 @@
     const logo = document.getElementById('logo');
     const links = dropdownMenu.querySelectorAll('a');
 
-    function showPage(page){
+    // Lấy trang hiện tại từ localStorage hoặc mặc định là home
+    let currentPage = localStorage.getItem("currentPage") || "home";
+
+    // Hide overlay sau khi load web
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        overlay.style.display = 'none';
+        mainContent.classList.add('show');
+        showPage(currentPage, false); // không lưu lại nữa
+      }, 1000);
+    });
+
+    // Toggle sidebar
+    menuBtn.addEventListener('click', () => {
+      dropdownMenu.classList.toggle('show');
+    });
+
+    // Click ngoài sidebar thì tắt
+    window.addEventListener('click', (e) => {
+      if (!menuBtn.contains(e.target) && !dropdownMenu.contains(e.target)) {
+        dropdownMenu.classList.remove('show');
+      }
+    });
+
+    // Hàm hiển thị nội dung
+    function showPage(page, save = true){
       overlay.style.display = 'flex';
       mainContent.classList.remove('show');
 
@@ -197,54 +237,26 @@
           mainContent.innerHTML = `
             <h1>Connect</h1>
             <p>Đây là phần Connect. Nội dung nền đen, chữ trắng.</p>
-            <button id="discordBtn">Vào server Discord</button>
+            <button id="discordBtn">Join my server</button>
           `;
+          // gắn sự kiện cho nút Discord
           const discordBtn = document.getElementById("discordBtn");
           discordBtn.addEventListener("click", () => {
             window.open("https://discord.gg/cHrynR4E", "_blank");
           });
         }
-
-        // lưu lại trang đang mở
-        localStorage.setItem("currentPage", page);
-
-        // reset active
-        links.forEach(l => l.classList.remove("active"));
-        // set active cho menu tương ứng
-        const activeLink = dropdownMenu.querySelector(`[data-page="${page}"]`);
-        if (activeLink) activeLink.classList.add("active");
-
+        // highlight menu
+        links.forEach(link => {
+          link.classList.remove("active");
+          if(link.getAttribute("data-page") === page){
+            link.classList.add("active");
+          }
+        });
+        if(save) localStorage.setItem("currentPage", page);
         overlay.style.display = 'none';
         mainContent.classList.add('show');
       }, 800);
     }
-
-    // Khi load web xong
-    window.addEventListener('load', () => {
-      setTimeout(() => {
-        overlay.style.display = 'none';
-        mainContent.classList.add('show');
-
-        const savedPage = localStorage.getItem("currentPage");
-        if(savedPage){
-          showPage(savedPage);
-        } else {
-          showPage("home");
-        }
-      }, 1000);
-    });
-
-    // Toggle sidebar
-    menuBtn.addEventListener('click', () => {
-      dropdownMenu.classList.toggle('show');
-    });
-
-    // Click ngoài sidebar thì tắt
-    window.addEventListener('click', (e) => {
-      if (!menuBtn.contains(e.target) && !dropdownMenu.contains(e.target)) {
-        dropdownMenu.classList.remove('show');
-      }
-    });
 
     // Menu click
     links.forEach(link => {
