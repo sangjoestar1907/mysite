@@ -44,6 +44,7 @@
       font-size: 20px;
       border: none;
       cursor: pointer;
+      border-radius: 0;
     }
 
     .dropbtn:hover {
@@ -57,35 +58,30 @@
       position: fixed;
       top: 0;
       left: -200px;
-      background-color: #111;
-      overflow-x: hidden;
+      background-color: #000;
       transition: 0.3s;
       z-index: 2000;
-      padding-top: 60px;
+      padding-top: 0;
     }
 
-    .menu-header {
-      padding: 15px 20px;
+    /* Tiêu đề trong sidebar */
+    .dropdown-content .title {
       font-size: 20px;
       font-weight: bold;
-      color: #fff;
+      padding: 15px 20px;
       border-bottom: 1px solid #333;
       text-align: left;
     }
 
     .dropdown-content a {
       display: block;
-      padding: 12px 20px;
+      padding: 15px 20px;
       color: #fff;
       text-decoration: none;
     }
 
     .dropdown-content a:hover {
       background-color: #333;
-    }
-
-    .dropdown-content a.active {
-      background-color: #444;
     }
 
     .dropdown-content.show {
@@ -167,14 +163,17 @@
 
   <!-- Sidebar menu -->
   <div class="dropdown-content" id="dropdownMenu">
-    <div class="menu-header">SaKi-Hub</div>
-    <a href="/home" data-page="home">Home</a>
-    <a href="/script" data-page="script">Script</a>
-    <a href="/connect" data-page="connect">Connect</a>
+    <div class="title">SaKi-Hub</div>
+    <a href="#" data-page="home">Home</a>
+    <a href="#" data-page="script">Script</a>
+    <a href="#" data-page="connect">Connect</a>
   </div>
 
   <!-- Nội dung chính -->
-  <div class="container" id="mainContent"></div>
+  <div class="container" id="mainContent">
+    <h1>Giới thiệu</h1>
+    <p>Toàn bộ web có nền màu đen, chữ trắng. Đây là nội dung Home mặc định.</p>
+  </div>
 
   <script>
     const overlay = document.getElementById('overlay');
@@ -182,14 +181,13 @@
     const dropdownMenu = document.getElementById('dropdownMenu');
     const mainContent = document.getElementById('mainContent');
     const logo = document.getElementById('logo');
-    const links = dropdownMenu.querySelectorAll('a');
 
     // Hide overlay sau khi load web
     window.addEventListener('load', () => {
       setTimeout(() => {
         overlay.style.display = 'none';
         mainContent.classList.add('show');
-      }, 800);
+      }, 1000);
     });
 
     // Toggle sidebar
@@ -204,66 +202,52 @@
       }
     });
 
-    // Nội dung từng trang
-    const pages = {
-      home: `
-        <h1>Giới thiệu</h1>
-        <p>Toàn bộ web có nền màu đen, chữ trắng. Đây là nội dung Home.</p>
-      `,
-      script: `
-        <h1>Script</h1>
-        <p>Đây là phần Script. Nội dung vẫn nền đen, chữ trắng.</p>
-      `,
-      connect: `
-        <h1>Connect</h1>
-        <p>Đây là phần Connect. Nội dung nền đen, chữ trắng.</p>
-        <button id="discordBtn">Join Discord</button>
-      `
-    };
+    // Hàm hiển thị nội dung
+    function showPage(page){
+      overlay.style.display = 'flex';
+      mainContent.classList.remove('show');
 
-    function showPage(page) {
-      if (!pages[page]) page = "home";
-      mainContent.innerHTML = pages[page];
-
-      if (page === "connect") {
-        document.getElementById("discordBtn").addEventListener("click", () => {
-          window.open("https://discord.gg/cHrynR4E", "_blank");
-        });
-      }
-
-      // highlight menu
-      links.forEach(link => link.classList.remove("active"));
-      document.querySelector(`[data-page="${page}"]`)?.classList.add("active");
+      setTimeout(() => {
+        if(page === 'home'){
+          mainContent.innerHTML = `
+            <h1>Giới thiệu</h1>
+            <p>Toàn bộ web có nền màu đen, chữ trắng. Đây là nội dung Home.</p>
+          `;
+        } else if(page === 'script'){
+          mainContent.innerHTML = `
+            <h1>Script</h1>
+            <p>Đây là phần Script. Nội dung vẫn nền đen, chữ trắng.</p>
+          `;
+        } else if(page === 'connect'){
+          mainContent.innerHTML = `
+            <h1>Connect</h1>
+            <p>Đây là phần Connect. Nội dung nền đen, chữ trắng.</p>
+            <button id="discordBtn">Join my server</button>
+          `;
+          const discordBtn = document.getElementById("discordBtn");
+          discordBtn.addEventListener("click", () => {
+            window.open("https://discord.gg/cHrynR4E", "_blank");
+          });
+        }
+        overlay.style.display = 'none';
+        mainContent.classList.add('show');
+      }, 800);
     }
 
     // Menu click
+    const links = dropdownMenu.querySelectorAll('a');
     links.forEach(link => {
       link.addEventListener('click', (e) => {
         e.preventDefault();
         const page = link.getAttribute('data-page');
-        history.pushState({ page }, "", link.getAttribute("href"));
         showPage(page);
         dropdownMenu.classList.remove('show');
       });
     });
 
-    // Back/Forward
-    window.onpopstate = (e) => {
-      if (e.state && e.state.page) {
-        showPage(e.state.page);
-      }
-    };
-
-    // Khi mở web
-    const path = window.location.pathname.replace("/", "");
-    const initialPage = path && pages[path] ? path : "home";
-    history.replaceState({ page: initialPage }, "", "/" + initialPage);
-    showPage(initialPage);
-
     // Click logo về Home
     logo.addEventListener('click', () => {
-      history.pushState({ page: "home" }, "", "/home");
-      showPage("home");
+      showPage('home');
     });
   </script>
 </body>
