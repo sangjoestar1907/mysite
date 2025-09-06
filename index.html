@@ -62,12 +62,11 @@
       overflow-x: hidden;
       transition: 0.3s;
       z-index: 2000;
-      padding-top: 0;
     }
 
     .dropdown-content a {
       display: block;
-      padding: 15px 20px;
+      padding: 12px 16px;
       color: #fff;
       text-decoration: none;
     }
@@ -78,16 +77,13 @@
 
     /* Sidebar header */
     .menu-header {
-      position: sticky;
-      top: 0;
-      padding: 20px;
+      padding: 15px 16px;
       font-size: 18px;
       font-weight: bold;
       color: #fff;
       background-color: #000;
-      text-align: center;
       border-bottom: 1px solid #333;
-      z-index: 2100;
+      text-align: left; /* căn trái */
     }
 
     /* Overlay khi mở sidebar */
@@ -216,10 +212,10 @@
 
     // Toggle sidebar
     menuBtn.addEventListener('click', () => {
-      if (dropdownMenu.style.width === "250px") {
+      if (dropdownMenu.style.width === "200px") {
         closeMenu();
       } else {
-        dropdownMenu.style.width = "250px";
+        dropdownMenu.style.width = "200px"; /* nhỏ lại */
         overlay.style.display = "block";
       }
     });
