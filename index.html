@@ -19,7 +19,7 @@
       align-items: center;
       justify-content: center;
       padding: 10px 0;
-      background-color: #000; /* nền header màu đen */
+      background-color: #000; /* nền header đen */
       position: sticky;
       top: 0;
       z-index: 1000;
@@ -31,7 +31,7 @@
       font-weight: bold;
       cursor: pointer;
       color: #fff; /* chữ logo trắng */
-      background-color: #000; /* nền logo đen */
+      background-color: #000;
       padding: 5px 10px;
     }
 
@@ -41,7 +41,7 @@
       left: 0;
       top: 50%;
       transform: translateY(-50%);
-      background-color: #000; /* nền nút đen */
+      background-color: #000;
       color: white;
       padding: 10px 16px;
       font-size: 20px;
@@ -61,7 +61,7 @@
       position: fixed;
       top: 0;
       left: -220px;
-      background-color: #000; /* nền đen */
+      background-color: #000;
       overflow-x: hidden;
       transition: 0.3s;
       z-index: 2000;
@@ -153,11 +153,11 @@
       background-color: #4752c4;
     }
 
-    /* Nút Music */
+    /* Nút Music xuống dưới bên phải */
     #musicBtn {
       position: fixed;
       right: 20px;
-      top: 15px;
+      bottom: 20px; /* xuống dưới */
       z-index: 4000;
     }
   </style>
@@ -204,7 +204,6 @@
     const bgm = document.getElementById('bgm');
     let isPlaying = false;
 
-    // Hide overlay sau khi load web
     window.addEventListener('load', () => {
       setTimeout(() => {
         overlay.style.display = 'none';
@@ -215,19 +214,16 @@
       }, 1000);
     });
 
-    // Toggle sidebar
     menuBtn.addEventListener('click', () => {
       dropdownMenu.classList.toggle('show');
     });
 
-    // Click ngoài sidebar thì tắt
     window.addEventListener('click', (e) => {
       if (!menuBtn.contains(e.target) && !dropdownMenu.contains(e.target)) {
         dropdownMenu.classList.remove('show');
       }
     });
 
-    // Nút phát nhạc
     musicBtn.addEventListener('click', () => {
       if(isPlaying){
         bgm.pause();
@@ -240,7 +236,6 @@
       }
     });
 
-    // Hàm hiển thị nội dung
     function showPage(page){
       overlay.style.display = 'flex';
       mainContent.classList.remove('show');
@@ -277,7 +272,6 @@
       }, 800);
     }
 
-    // Menu click
     const links = dropdownMenu.querySelectorAll('a');
     links.forEach(link => {
       link.addEventListener('click', (e) => {
@@ -288,7 +282,6 @@
       });
     });
 
-    // Click logo về Home
     logo.addEventListener('click', () => {
       showPage('home');
     });
