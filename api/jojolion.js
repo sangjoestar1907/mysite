@@ -9,7 +9,7 @@ export default function handler(req, res) {
 
   // Code script Roblox của bạn
   const script = `
-      print("Hello World")
+      print("Gei")
       local Players = game:GetService("Players")
 local VirtualInputManager = game:GetService("VirtualInputManager")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -172,7 +172,7 @@ task.spawn(function()
                     for _, coin in ipairs(coins) do
                         if coin and coin.Parent and HRP then
                             flyTo(coin.Position + Vector3.new(0, 3, 0))
-                            task.wait(0.1)
+                            task.wait(0.5)
                         end
                     end
                 end
