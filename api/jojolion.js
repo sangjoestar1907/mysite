@@ -60,7 +60,7 @@ task.spawn(function()
 end)
 
 --===== AUTO FARM COIN =====--
-local flySpeed = 70
+local flySpeed = 32
 local HRP, Char
 
 RunService.Stepped:Connect(function()
@@ -191,7 +191,7 @@ task.spawn(function()
                         statusLabel.Text = "Status: Đang nhặt coin"
                         isCollecting = true
                         flyTo(coin.Position + Vector3.new(0, 3, 0))
-                        task.wait(0.1)
+                        task.wait(0.5)
                     end
                 end
             end
