@@ -17,9 +17,9 @@
     header {
       display: flex;
       align-items: center;
-      justify-content: center; 
+      justify-content: center;
       padding: 10px 0;
-      background-color: #000; /* toàn header nền đen */
+      background-color: #000; /* nền đen */
       position: sticky;
       top: 0;
       z-index: 1000;
@@ -31,8 +31,6 @@
       font-weight: bold;
       cursor: pointer;
       color: #fff; /* chữ trắng */
-      background-color: #000; /* nền đen */
-      padding: 5px 10px;
     }
 
     /* Nút ba gạch */
@@ -47,7 +45,6 @@
       font-size: 20px;
       border: none;
       cursor: pointer;
-      border-radius: 0;
     }
 
     .dropbtn:hover {
@@ -89,7 +86,7 @@
       margin: 0;
       padding: 15px 12px;
       text-align: left;
-      background-color: #000; 
+      background-color: #000;
       border-bottom: 1px solid #111;
     }
 
@@ -181,7 +178,7 @@
   </div>
 
   <!-- Nhạc nền -->
-  <audio id="bgm" src="bgm.mp3" autoplay loop></audio>
+  <audio id="bgm" src="bgm.mp3" loop></audio>
 
   <script>
     const overlay = document.getElementById('overlay');
@@ -208,12 +205,21 @@
       dropdownMenu.classList.toggle('show');
     });
 
-    // Click ngoài sidebar thì tắt
+    // Click ngoài sidebar tắt
     window.addEventListener('click', (e) => {
       if (!menuBtn.contains(e.target) && !dropdownMenu.contains(e.target)) {
         dropdownMenu.classList.remove('show');
       }
     });
+
+    // Phát nhạc khi click lần đầu trên trang
+    let musicStarted = false;
+    document.body.addEventListener('click', () => {
+      if (!musicStarted) {
+        bgm.play().catch(err => console.log("Không thể phát nhạc:", err));
+        musicStarted = true;
+      }
+    }, { once: true });
 
     // Hàm hiển thị nội dung
     function showPage(page){
@@ -243,7 +249,6 @@
             window.open("https://discord.gg/cHrynR4E", "_blank");
           });
         }
-
         overlay.style.display = 'none';
         mainContent.classList.add('show');
 
