@@ -17,7 +17,7 @@
     header {
       display: flex;
       align-items: center;
-      justify-content: center; 
+      justify-content: center;
       padding: 10px 0;
       background-color: #000;
       position: sticky;
@@ -33,7 +33,6 @@
       color: #fff;
       background-color: #000;
       padding: 5px 12px;
-      border-radius: 3px;
     }
 
     /* Nút ba gạch */
@@ -66,7 +65,6 @@
       overflow-x: hidden;
       transition: 0.3s;
       z-index: 2000;
-      padding-top: 60px;
     }
 
     .dropdown-content a {
@@ -92,6 +90,10 @@
       text-align: left;
       background-color: #000;
       border-bottom: 1px solid #111;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
     }
 
     /* Container nội dung */
@@ -138,7 +140,7 @@
     }
 
     /* Nút Discord */
-    button.discord-btn {
+    button {
       background-color: #5865F2;
       color: white;
       border: none;
@@ -149,9 +151,10 @@
       transition: 0.2s;
     }
 
-    button.discord-btn:hover {
+    button:hover {
       background-color: #4752c4;
     }
+
   </style>
 </head>
 <body>
@@ -181,18 +184,12 @@
     <p>Toàn bộ web có nền màu đen, chữ trắng. Đây là nội dung Home mặc định.</p>
   </div>
 
-  <!-- Nhạc -->
-  <audio id="bgm" src="bgm.mp3" loop></audio>
-
   <script>
     const overlay = document.getElementById('overlay');
     const menuBtn = document.getElementById('menuBtn');
     const dropdownMenu = document.getElementById('dropdownMenu');
     const mainContent = document.getElementById('mainContent');
     const logo = document.getElementById('logo');
-    const bgm = document.getElementById('bgm');
-
-    let musicStarted = false;
 
     // Hide overlay sau khi load web
     window.addEventListener('load', () => {
@@ -218,14 +215,6 @@
       }
     });
 
-    // Phát nhạc khi click bất cứ đâu lần đầu
-    document.addEventListener('click', () => {
-      if(!musicStarted){
-        bgm.play();
-        musicStarted = true;
-      }
-    }, {once: true}); // chỉ chạy 1 lần
-
     // Hàm hiển thị nội dung
     function showPage(page){
       overlay.style.display = 'flex';
@@ -246,19 +235,16 @@
           mainContent.innerHTML = `
             <h1>Connect</h1>
             <p>Đây là phần Connect. Nội dung nền đen, chữ trắng.</p>
-            <button class="discord-btn" id="discordBtn">Join my server</button>
+            <button id="discordBtn">Join my server</button>
           `;
-          // gắn sự kiện cho nút Discord
           const discordBtn = document.getElementById("discordBtn");
           discordBtn.addEventListener("click", () => {
             window.open("https://discord.gg/cHrynR4E", "_blank");
           });
         }
-
         overlay.style.display = 'none';
         mainContent.classList.add('show');
 
-        // Lưu page hiện tại
         localStorage.setItem("currentPage", page);
         const url = new URL(window.location);
         url.searchParams.set('page', page);
