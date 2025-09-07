@@ -19,7 +19,7 @@ local Player = Players.LocalPlayer
 local gui = Player:WaitForChild("PlayerGui")
 
 local Char, HRP
-local flySpeed = 70 -- tốc độ bay (studs/giây)
+local flySpeed = 50 -- tốc độ bay (studs/giây)
 
 -- 📌 1. BlackScreen GUI + Username + Toggle
 local blackGui = Instance.new("ScreenGui")
