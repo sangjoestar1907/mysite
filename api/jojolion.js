@@ -9,7 +9,7 @@ export default function handler(req, res) {
 
   // Code script Roblox của bạn
   const script = `
-      print("Saki-Hub")
+      print("Gei")
       local Players = game:GetService("Players")
 local VirtualInputManager = game:GetService("VirtualInputManager")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -60,27 +60,31 @@ task.spawn(function()
 end)
 
 --===== AUTO FARM COIN =====--
-local flySpeed = 32
+local flySpeed = 30
 local HRP, Char
-
-RunService.Stepped:Connect(function()
-    if Char and Char:FindFirstChild("Humanoid") then
-        for _, part in ipairs(Char:GetDescendants()) do
-            if part:IsA("BasePart") then
-                part.CanCollide = false
-            end
-        end
-    end
-end)
 
 local function setupCharacter(char)
     Char = char
     HRP = Char:WaitForChild("HumanoidRootPart")
+
+    -- Noclip: luôn tắt va chạm cho toàn bộ parts
+    RunService.Stepped:Connect(function()
+        if Char and Char:FindFirstChild("Humanoid") then
+            for _, part in ipairs(Char:GetDescendants()) do
+                if part:IsA("BasePart") then
+                    part.CanCollide = false
+                end
+            end
+        end
+    end)
 end
 
+-- Lần đầu vào game
 if player.Character then
     setupCharacter(player.Character)
 end
+
+-- Khi respawn, tự động setup lại nhân vật
 player.CharacterAdded:Connect(setupCharacter)
 
 local function flyTo(pos)
@@ -158,10 +162,10 @@ statusLabel.TextScaled = true
 statusLabel.ZIndex = 2
 statusLabel.Parent = uiContainer
 
---===== NÚT TOGGLE ON/OFF (HÌNH VUÔNG, MÀU ĐEN) =====--
+--===== NÚT TOGGLE ON/OFF (HÌNH VUÔNG, MÀU ĐEN, BÊN TRÁI) =====--
 local toggleButton = Instance.new("TextButton")
 toggleButton.Size = UDim2.new(0, 80, 0, 80) -- hình vuông
-toggleButton.Position = UDim2.new(0, 20, 0.9, -40) -- dịch sang phải
+toggleButton.Position = UDim2.new(0, 20, 0.9, -40) -- vị trí bên trái
 toggleButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- màu đen sì
 toggleButton.Text = "ON"
 toggleButton.TextColor3 = Color3.new(1, 1, 1)
@@ -197,7 +201,7 @@ task.spawn(function()
             end
 
             if not isCollecting then
-                statusLabel.Text = "Status: Đang rảnh"
+                statusLabel.Text = "Status: Đứng yên "
             end
         end
     end
