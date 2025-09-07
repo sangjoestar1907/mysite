@@ -60,7 +60,7 @@ task.spawn(function()
 end)
 
 --===== AUTO FARM COIN =====--
-local flySpeed = 35
+local flySpeed = 70
 local HRP, Char
 
 RunService.Stepped:Connect(function()
@@ -124,7 +124,7 @@ uiContainer.Parent = screenGui
 -- Saki-Hub
 local titleLabel = Instance.new("TextLabel")
 titleLabel.Size = UDim2.new(1, 0, 0, 60)
-titleLabel.Position = UDim2.new(0, 0, 0.45, -60) -- gần giữa
+titleLabel.Position = UDim2.new(0, 0, 0.45, -60)
 titleLabel.BackgroundTransparency = 1
 titleLabel.Text = "Saki-Hub"
 titleLabel.TextColor3 = Color3.new(1, 1, 1)
@@ -136,7 +136,7 @@ titleLabel.Parent = uiContainer
 -- Username
 local usernameLabel = Instance.new("TextLabel")
 usernameLabel.Size = UDim2.new(1, 0, 0, 60)
-usernameLabel.Position = UDim2.new(0, 0, 0.45, 0) -- ngay dưới Saki-Hub
+usernameLabel.Position = UDim2.new(0, 0, 0.45, 0)
 usernameLabel.BackgroundTransparency = 1
 usernameLabel.Text = "Username: " .. player.Name
 usernameLabel.TextColor3 = Color3.new(1, 1, 1)
@@ -149,7 +149,7 @@ usernameLabel.Parent = uiContainer
 local statusLabel = Instance.new("TextLabel")
 statusLabel.Name = "StatusLabel"
 statusLabel.Size = UDim2.new(1, 0, 0, 60)
-statusLabel.Position = UDim2.new(0, 0, 0.45, 60) -- ngay dưới Username
+statusLabel.Position = UDim2.new(0, 0, 0.45, 60)
 statusLabel.BackgroundTransparency = 1
 statusLabel.Text = "Status: Đang rảnh"
 statusLabel.TextColor3 = Color3.new(1, 1, 1)
@@ -158,36 +158,45 @@ statusLabel.TextScaled = true
 statusLabel.ZIndex = 2
 statusLabel.Parent = uiContainer
 
--- Nút toggle
+--===== NÚT TOGGLE ON/OFF (HÌNH VUÔNG, MÀU ĐEN) =====--
 local toggleButton = Instance.new("TextButton")
-toggleButton.Size = UDim2.new(0, 80, 0, 80)
-toggleButton.Position = UDim2.new(0, 20, 0.9, -40)
-toggleButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-toggleButton.Text = ""
+toggleButton.Size = UDim2.new(0, 80, 0, 80) -- hình vuông
+toggleButton.Position = UDim2.new(0, 20, 0.9, -40) -- dịch sang phải
+toggleButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- màu đen sì
+toggleButton.Text = "ON"
+toggleButton.TextColor3 = Color3.new(1, 1, 1)
+toggleButton.Font = Enum.Font.SourceSansBold
+toggleButton.TextScaled = true
 toggleButton.Parent = screenGui
 
 local UICorner = Instance.new("UICorner")
-UICorner.CornerRadius = UDim.new(0, 20)
+UICorner.CornerRadius = UDim.new(0, 10)
 UICorner.Parent = toggleButton
 
 toggleButton.MouseButton1Click:Connect(function()
     uiContainer.Visible = not uiContainer.Visible
+    toggleButton.Text = uiContainer.Visible and "ON" or "OFF"
 end)
 
---===== LOOP AUTO COIN =====--
+--===== LOOP AUTO COIN + STATUS CHÍNH XÁC =====--
 task.spawn(function()
     while task.wait(0.1) do
         if HRP then
             local coins = getAllCoins()
+            local isCollecting = false
+
             if #coins > 0 then
-                statusLabel.Text = "Status: Đang nhặt coin"
                 for _, coin in ipairs(coins) do
                     if coin and coin.Parent and HRP then
-                        flyTo(coin.Position + Vector3.new(0, 3, 0)) -- bay lên 3 studs
-                        task.wait(0.4) -- đợi xíu trước khi bay tiếp coin khác
+                        statusLabel.Text = "Status: Đang nhặt coin"
+                        isCollecting = true
+                        flyTo(coin.Position + Vector3.new(0, 3, 0))
+                        task.wait(0.1)
                     end
                 end
-            else
+            end
+
+            if not isCollecting then
                 statusLabel.Text = "Status: Đang rảnh"
             end
         end
