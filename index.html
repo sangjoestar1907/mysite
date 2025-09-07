@@ -17,9 +17,9 @@
     header {
       display: flex;
       align-items: center;
-      justify-content: center;
+      justify-content: center; 
       padding: 10px 0;
-      background-color: #111;
+      background-color: #000; /* toàn header nền đen */
       position: sticky;
       top: 0;
       z-index: 1000;
@@ -61,7 +61,7 @@
       position: fixed;
       top: 0;
       left: -220px;
-      background-color: #000; /* nền đen */
+      background-color: #000; 
       overflow-x: hidden;
       transition: 0.3s;
       z-index: 2000;
@@ -89,7 +89,7 @@
       margin: 0;
       padding: 15px 12px;
       text-align: left;
-      background-color: #000; /* nền đen */
+      background-color: #000; 
       border-bottom: 1px solid #111;
     }
 
@@ -181,7 +181,7 @@
   </div>
 
   <!-- Nhạc nền -->
-  <audio id="bgm" src="bgm.mp3" loop></audio>
+  <audio id="bgm" src="bgm.mp3" autoplay loop></audio>
 
   <script>
     const overlay = document.getElementById('overlay');
@@ -191,15 +191,13 @@
     const logo = document.getElementById('logo');
     const bgm = document.getElementById('bgm');
 
-    let isMusicPlayed = false;
-
     // Hide overlay sau khi load web
     window.addEventListener('load', () => {
       setTimeout(() => {
         overlay.style.display = 'none';
         mainContent.classList.add('show');
 
-        // Load page từ URL nếu có
+        // Load page từ URL hoặc localStorage
         const page = new URLSearchParams(window.location.search).get("page") || localStorage.getItem("currentPage") || "home";
         showPage(page);
       }, 1000);
@@ -208,28 +206,13 @@
     // Toggle sidebar
     menuBtn.addEventListener('click', () => {
       dropdownMenu.classList.toggle('show');
-
-      // Tự phát nhạc khi người click dropdown lần đầu
-      if(!isMusicPlayed){
-        bgm.play().catch(()=>{}); // thử play
-        isMusicPlayed = true;
-      }
     });
 
     // Click ngoài sidebar thì tắt
     window.addEventListener('click', (e) => {
-      if (!menuBtn.contains(e.target) && !dropdownMenu.contains(e.target)){
+      if (!menuBtn.contains(e.target) && !dropdownMenu.contains(e.target)) {
         dropdownMenu.classList.remove('show');
       }
-    });
-
-    // Khi người click logo cũng tự phát nhạc lần đầu
-    logo.addEventListener('click', () => {
-      if(!isMusicPlayed){
-        bgm.play().catch(()=>{});
-        isMusicPlayed = true;
-      }
-      showPage('home');
     });
 
     // Hàm hiển thị nội dung
@@ -260,12 +243,12 @@
             window.open("https://discord.gg/cHrynR4E", "_blank");
           });
         }
+
         overlay.style.display = 'none';
         mainContent.classList.add('show');
 
         // Lưu page hiện tại
         localStorage.setItem("currentPage", page);
-        // Cập nhật URL
         const url = new URL(window.location);
         url.searchParams.set('page', page);
         window.history.replaceState({}, '', url);
@@ -281,6 +264,11 @@
         showPage(page);
         dropdownMenu.classList.remove('show');
       });
+    });
+
+    // Click logo về Home
+    logo.addEventListener('click', () => {
+      showPage('home');
     });
   </script>
 </body>
