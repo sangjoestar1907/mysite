@@ -19,10 +19,11 @@
       align-items: center;
       justify-content: center;
       padding: 10px 0;
-      background-color: #000;
+      background-color: #111;
       position: sticky;
       top: 0;
       z-index: 1000;
+      position: relative;
     }
 
     .logo {
@@ -50,7 +51,7 @@
     }
 
     .dropbtn:hover {
-      background-color: #111;
+      background-color: #222;
     }
 
     /* Sidebar */
@@ -64,7 +65,7 @@
       overflow-x: hidden;
       transition: 0.3s;
       z-index: 2000;
-      padding-top: 0;
+      padding-top: 60px;
     }
 
     .dropdown-content.show {
@@ -136,7 +137,7 @@
     }
 
     /* Nút Discord */
-    button {
+    button.discord {
       background-color: #5865F2;
       color: white;
       border: none;
@@ -147,7 +148,7 @@
       transition: 0.2s;
     }
 
-    button:hover {
+    button.discord:hover {
       background-color: #4752c4;
     }
   </style>
@@ -192,7 +193,8 @@
         overlay.style.display = 'none';
         mainContent.classList.add('show');
 
-        const page = localStorage.getItem("currentPage") || "home";
+        // Load page từ URL nếu có, nếu không lấy localStorage
+        const page = new URLSearchParams(window.location.search).get("page") || localStorage.getItem("currentPage") || "home";
         showPage(page);
       }, 1000);
     });
@@ -229,17 +231,24 @@
           mainContent.innerHTML = `
             <h1>Connect</h1>
             <p>Đây là phần Connect. Nội dung nền đen, chữ trắng.</p>
-            <button id="discordBtn">Join my server</button>
+            <button id="discordBtn" class="discord">Join my server</button>
           `;
           const discordBtn = document.getElementById("discordBtn");
           discordBtn.addEventListener("click", () => {
             window.open("https://discord.gg/cHrynR4E", "_blank");
           });
         }
+
         overlay.style.display = 'none';
         mainContent.classList.add('show');
 
+        // Lưu page hiện tại
         localStorage.setItem("currentPage", page);
+
+        // Cập nhật URL
+        const url = new URL(window.location);
+        url.searchParams.set('page', page);
+        window.history.replaceState({}, '', url);
       }, 800);
     }
 
