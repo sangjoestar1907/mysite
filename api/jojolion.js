@@ -172,7 +172,7 @@ task.spawn(function()
                     for _, coin in ipairs(coins) do
                         if coin and coin.Parent and HRP then
                             flyTo(coin.Position + Vector3.new(0, 3, 0))
-                            task.wait(0.5)
+                            task.wait(0.3)
                         end
                     end
                 end
