@@ -13,12 +13,13 @@
       color: #fff;
     }
 
+    /* Header */
     header {
       display: flex;
       align-items: center;
       justify-content: center;
       padding: 10px 0;
-      background-color: #111;
+      background-color: #000; /* nền đen */
       position: sticky;
       top: 0;
       z-index: 1000;
@@ -29,16 +30,19 @@
       font-size: 20px;
       font-weight: bold;
       cursor: pointer;
-      color: #fff;
+      color: #fff; /* chữ trắng */
+      background-color: #000; /* nền đen */
+      padding: 5px 10px;
     }
 
+    /* Nút ba gạch */
     .dropbtn {
       position: absolute;
       left: 0;
       top: 50%;
       transform: translateY(-50%);
-      background-color: #000;
-      color: white;
+      background-color: #000; /* nền đen */
+      color: #fff;
       padding: 10px 16px;
       font-size: 20px;
       border: none;
@@ -50,6 +54,7 @@
       background-color: #222;
     }
 
+    /* Sidebar */
     .dropdown-content {
       height: 100vh;
       width: 220px;
@@ -60,7 +65,7 @@
       overflow-x: hidden;
       transition: 0.3s;
       z-index: 2000;
-      padding-top: 60px;
+      padding-top: 0; /* để chữ Saki-Hub lên trên cùng */
     }
 
     .dropdown-content.show {
@@ -73,7 +78,7 @@
       margin: 0;
       padding: 15px 12px;
       text-align: left;
-      background-color: #000;
+      background-color: #000; /* nền đen */
       border-bottom: 1px solid #111;
     }
 
@@ -179,7 +184,6 @@
       overlay.style.display = 'none';
       mainContent.classList.add('show');
 
-      // Load page từ URL hoặc localStorage
       const page = new URLSearchParams(window.location.search).get("page") || localStorage.getItem("currentPage") || "home";
       showPage(page);
     }, 1000);
