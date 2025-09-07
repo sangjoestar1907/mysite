@@ -9,7 +9,7 @@
       margin: 0;
       padding: 0;
       font-family: Arial, sans-serif;
-      background-color: #000;
+      background-color: #000; /* nền web đen */
       color: #fff;
     }
 
@@ -19,7 +19,7 @@
       align-items: center;
       justify-content: center;
       padding: 10px 0;
-      background-color: #111;
+      background-color: #000; /* nền đen */
       position: sticky;
       top: 0;
       z-index: 1000;
@@ -30,7 +30,9 @@
       font-size: 20px;
       font-weight: bold;
       cursor: pointer;
-      color: #000; /* logo màu đen */
+      color: #fff; /* chữ trắng */
+      background-color: #000; /* nền đen */
+      padding: 5px 10px;
     }
 
     /* Nút ba gạch */
@@ -40,16 +42,15 @@
       top: 50%;
       transform: translateY(-50%);
       background-color: #000; /* nền đen */
-      color: white;
+      color: #fff;
       padding: 10px 16px;
       font-size: 20px;
       border: none;
       cursor: pointer;
-      border-radius: 0;
     }
 
     .dropbtn:hover {
-      background-color: #222;
+      background-color: #111;
     }
 
     /* Sidebar */
@@ -59,7 +60,7 @@
       position: fixed;
       top: 0;
       left: -220px;
-      background-color: #000;
+      background-color: #000; /* nền đen */
       overflow-x: hidden;
       transition: 0.3s;
       z-index: 2000;
@@ -69,8 +70,9 @@
     .dropdown-content a {
       display: block;
       padding: 15px 20px;
-      color: #fff;
+      color: #fff; /* chữ trắng */
       text-decoration: none;
+      background-color: #000; /* nền đen */
     }
 
     .dropdown-content a:hover {
@@ -82,13 +84,12 @@
     }
 
     .sidebar-logo {
-      color: #fff;
+      color: #fff; /* chữ trắng */
       font-size: 20px;
       font-weight: bold;
       margin: 0;
       padding: 20px 12px;
-      background-color: #000;
-      border-bottom: 1px solid #111;
+      background-color: #000; /* nền đen */
       text-align: left;
     }
 
@@ -97,7 +98,7 @@
       max-width: 800px;
       margin: 40px auto;
       padding: 20px;
-      background-color: #000;
+      background-color: #000; /* nền đen */
       opacity: 0;
       transition: opacity 0.5s ease;
     }
@@ -113,7 +114,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background-color: #000;
+      background-color: #000; /* nền đen */
       display: flex;
       align-items: center;
       justify-content: center;
@@ -157,8 +158,8 @@
       right: 20px;
       bottom: 20px;
       z-index: 4000;
-      background-color: #000;
-      color: #fff;
+      background-color: #000; /* nền đen */
+      color: #fff; /* chữ trắng */
       border: none;
       padding: 12px 16px;
       font-size: 18px;
@@ -167,7 +168,7 @@
     }
 
     #musicBtn:hover {
-      background-color: #222;
+      background-color: #111;
     }
   </style>
 </head>
@@ -213,31 +214,25 @@
     const bgm = document.getElementById('bgm');
     let isPlaying = false;
 
-    // Hide overlay sau khi load web
     window.addEventListener('load', () => {
       setTimeout(() => {
         overlay.style.display = 'none';
         mainContent.classList.add('show');
-
-        // Load page từ URL hoặc localStorage
         const page = new URLSearchParams(window.location.search).get("page") || localStorage.getItem("currentPage") || "home";
         showPage(page);
       }, 1000);
     });
 
-    // Toggle sidebar
     menuBtn.addEventListener('click', () => {
       dropdownMenu.classList.toggle('show');
     });
 
-    // Click ngoài sidebar thì tắt
     window.addEventListener('click', (e) => {
       if (!menuBtn.contains(e.target) && !dropdownMenu.contains(e.target)) {
         dropdownMenu.classList.remove('show');
       }
     });
 
-    // Nút phát nhạc
     musicBtn.addEventListener('click', () => {
       if(isPlaying){
         bgm.pause();
@@ -250,37 +245,22 @@
       }
     });
 
-    // Hiển thị nội dung
     function showPage(page){
       overlay.style.display = 'flex';
       mainContent.classList.remove('show');
-
       setTimeout(() => {
         if(page === 'home'){
-          mainContent.innerHTML = `
-            <h1>Giới thiệu</h1>
-            <p>Toàn bộ web có nền màu đen, chữ trắng. Đây là nội dung Home.</p>
-          `;
+          mainContent.innerHTML = `<h1>Giới thiệu</h1><p>Toàn bộ web có nền màu đen, chữ trắng. Đây là nội dung Home.</p>`;
         } else if(page === 'script'){
-          mainContent.innerHTML = `
-            <h1>Script</h1>
-            <p>Đây là phần Script. Nội dung vẫn nền đen, chữ trắng.</p>
-          `;
+          mainContent.innerHTML = `<h1>Script</h1><p>Đây là phần Script. Nội dung vẫn nền đen, chữ trắng.</p>`;
         } else if(page === 'connect'){
-          mainContent.innerHTML = `
-            <h1>Connect</h1>
-            <p>Đây là phần Connect. Nội dung nền đen, chữ trắng.</p>
-            <button class="discord" id="discordBtn">Join my server</button>
-          `;
-          const discordBtn = document.getElementById("discordBtn");
-          discordBtn.addEventListener("click", () => {
+          mainContent.innerHTML = `<h1>Connect</h1><p>Đây là phần Connect. Nội dung nền đen, chữ trắng.</p><button class="discord" id="discordBtn">Join my server</button>`;
+          document.getElementById("discordBtn").addEventListener("click", () => {
             window.open("https://discord.gg/cHrynR4E", "_blank");
           });
         }
         overlay.style.display = 'none';
         mainContent.classList.add('show');
-
-        // Lưu page hiện tại
         localStorage.setItem("currentPage", page);
         const url = new URL(window.location);
         url.searchParams.set('page', page);
@@ -288,7 +268,6 @@
       }, 800);
     }
 
-    // Menu click
     const links = dropdownMenu.querySelectorAll('a');
     links.forEach(link => {
       link.addEventListener('click', (e) => {
@@ -299,7 +278,6 @@
       });
     });
 
-    // Click logo về Home
     logo.addEventListener('click', () => {
       showPage('home');
     });
