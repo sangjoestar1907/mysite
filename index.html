@@ -19,7 +19,7 @@
       align-items: center;
       justify-content: center;
       padding: 10px 0;
-      background-color: #000; /* nền đen */
+      background-color: #000;
       position: sticky;
       top: 0;
       z-index: 1000;
@@ -30,9 +30,14 @@
       font-size: 20px;
       font-weight: bold;
       cursor: pointer;
-      color: #fff; /* chữ trắng */
-      background-color: #000; /* nền đen */
+      color: #fff;
+      background-color: #000;
       padding: 5px 10px;
+      transition: color 0.3s ease;
+    }
+
+    .logo:hover {
+      color: #ccc;
     }
 
     /* Nút ba gạch */
@@ -41,7 +46,7 @@
       left: 0;
       top: 50%;
       transform: translateY(-50%);
-      background-color: #000; /* nền đen */
+      background-color: #000;
       color: #fff;
       padding: 10px 16px;
       font-size: 20px;
@@ -63,13 +68,15 @@
       left: -220px;
       background-color: #000;
       overflow-x: hidden;
-      transition: 0.3s;
+      transition: left 0.3s ease, opacity 0.3s ease;
       z-index: 2000;
-      padding-top: 0; /* để chữ Saki-Hub lên trên cùng */
+      padding-top: 0;
+      opacity: 0;
     }
 
     .dropdown-content.show {
       left: 0;
+      opacity: 1;
     }
 
     .sidebar-logo {
@@ -78,7 +85,7 @@
       margin: 0;
       padding: 15px 12px;
       text-align: left;
-      background-color: #000; /* nền đen */
+      background-color: #000;
       border-bottom: 1px solid #111;
     }
 
@@ -117,6 +124,12 @@
       align-items: center;
       justify-content: center;
       z-index: 3000;
+      transition: opacity 0.5s ease;
+    }
+
+    #overlay.hide {
+      opacity: 0;
+      pointer-events: none;
     }
 
     .spinner {
@@ -181,9 +194,10 @@
 
   window.addEventListener('load', () => {
     setTimeout(() => {
-      overlay.style.display = 'none';
-      mainContent.classList.add('show');
+      overlay.classList.add('hide');
+      setTimeout(()=> overlay.style.display = 'none', 500);
 
+      mainContent.classList.add('show');
       const page = new URLSearchParams(window.location.search).get("page") || localStorage.getItem("currentPage") || "home";
       showPage(page);
     }, 1000);
@@ -201,6 +215,7 @@
 
   function showPage(page){
     overlay.style.display = 'flex';
+    overlay.classList.remove('hide');
     mainContent.classList.remove('show');
 
     setTimeout(() => {
@@ -226,9 +241,10 @@
         });
       }
 
-      overlay.style.display = 'none';
-      mainContent.classList.add('show');
+      overlay.classList.add('hide');
+      setTimeout(()=> overlay.style.display = 'none', 500);
 
+      mainContent.classList.add('show');
       localStorage.setItem("currentPage", page);
       const url = new URL(window.location);
       url.searchParams.set('page', page);
