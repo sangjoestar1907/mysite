@@ -4,6 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Saki-Hub</title>
+
+  <!-- Logo trên thanh tiêu đề (favicon) -->
+  <link rel="icon" type="image/png" href="logo.png">
+
   <style>
     body {
       margin: 0;
@@ -34,6 +38,13 @@
       background-color: #000;
       padding: 5px 10px;
       transition: color 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .logo img {
+      height: 28px; /* chỉnh to nhỏ tùy ý */
     }
 
     .logo:hover {
@@ -170,7 +181,10 @@
 
 <header>
   <button class="dropbtn" id="menuBtn">☰</button>
-  <div class="logo" id="logo">Saki-Hub</div>
+  <div class="logo" id="logo">
+    <img src="logo.png" alt="Saki-Hub Logo">
+    Saki-Hub
+  </div>
 </header>
 
 <div class="dropdown-content" id="dropdownMenu">
