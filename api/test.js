@@ -1,25 +1,26 @@
-let BossServers = []; // lưu jobId trong RAM
+import fs from "fs";
+import path from "path";
+
+const filePath = path.resolve("./data.json");
 
 export default function handler(req, res) {
-  const now = Date.now();
+  let BossServers = [];
 
-  // 🔥 B1: luôn xoá jobId quá 10 phút (600000 ms)
-  BossServers = BossServers.filter(s => now - s.time < 10 * 60 * 1000);
+  if (fs.existsSync(filePath)) {
+    BossServers = JSON.parse(fs.readFileSync(filePath, "utf-8"));
+  }
 
   if (req.method === "POST") {
-    const { jobId } = req.body;
+    const { jobId, placeId } = req.body;
+    if (!jobId) return res.status(400).json({ error: "Thiếu jobId" });
 
-    if (!jobId) {
-      return res.status(400).json({ error: "Thiếu jobId" });
-    }
-
-    // 🔥 B2: loại trùng và lưu lại jobId mới
+    // Xóa trùng
     BossServers = BossServers.filter(s => s.jobId !== jobId);
-    BossServers.push({ jobId, time: now });
+    BossServers.push({ jobId, placeId, time: Date.now() });
 
+    fs.writeFileSync(filePath, JSON.stringify(BossServers, null, 2));
     return res.status(200).json({ success: true });
   }
 
-  // 🔥 B3: trả danh sách jobId hiện có
   res.status(200).json(BossServers);
 }
