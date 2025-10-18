@@ -4,10 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Saki Hub - Blox Fruits Event Tracker</title>
-
   <link rel="icon" type="image/png" href="logo.png">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-
   <style>
     * {
       margin: 0;
@@ -474,68 +472,49 @@
   const mainContent = document.getElementById('mainContent');
   const logo = document.getElementById('logo');
 
-  // API Configuration - DÙNG MOCK DATA
+  // API Configuration
   const API_BASE_URL = 'https://saki-hub.vercel.app/api';
   let eventsLog = [];
   let activeServers = [];
 
-  // Mock database
-  let mockEventsDatabase = [];
+  // Database thật - CHỈ LƯU DATA THẬT
+  let eventsDatabase = [];
 
-  // Danh sách sự kiện Blox Fruits
+  // Danh sách sự kiện Blox Fruits (chỉ mô tả)
   const eventsList = [
-    { name: "Full Moon", world: "World 3", active: true, color: "#4CAF50" },
-    { name: "Near Full Moon", world: "World 3", active: true, color: "#FF9800" },
+    { name: "Full Moon", world: "World 3", active: false, color: "#4CAF50" },
+    { name: "Near Full Moon", world: "World 3", active: false, color: "#FF9800" },
     { name: "Mystic Island", world: "World 3", active: false, color: "#2196F3" },
-    { name: "Rip Indra True Form", world: "World 3", active: true, color: "#F44336" },
+    { name: "Rip Indra True Form", world: "World 3", active: false, color: "#F44336" },
     { name: "Dough King", world: "World 3", active: false, color: "#9C27B0" },
-    { name: "Darkbeard", world: "World 2", active: true, color: "#607D8B" },
+    { name: "Darkbeard", world: "World 2", active: false, color: "#607D8B" },
     { name: "Cursed Captain", world: "World 2", active: false, color: "#795548" }
   ];
 
-  // Hàm gọi API - DÙNG MOCK
+  // Hàm gọi API - CHỈ NHẬN DATA THẬT
   async function callAPI(endpoint, method = 'GET', data = null) {
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 300));
-    
-    if (method === 'POST' && endpoint === '/events') {
-      // Mock nhận event từ Roblox
-      const eventWithMetadata = {
-        ...data,
-        id: Date.now(),
-        received_at: new Date().toISOString(),
-        server_time: new Date().toLocaleString('vi-VN')
+    try {
+      const options = {
+        method: method,
+        headers: {
+          'Content-Type': 'application/json',
+        }
       };
+
+      if (data && (method === 'POST' || method === 'PUT')) {
+        options.body = JSON.stringify(data);
+      }
+
+      const response = await fetch(`${API_BASE_URL}${endpoint}`, options);
+      const result = await response.json();
       
-      mockEventsDatabase.unshift(eventWithMetadata);
-      if (mockEventsDatabase.length > 50) mockEventsDatabase = mockEventsDatabase.slice(0, 50);
+      addToLog(`${method} ${endpoint}`, result.success ? 'success' : 'error', result);
       
-      const result = { 
-        success: true, 
-        message: `Mock: Đã nhận event ${data.event_type}`,
-        event_id: eventWithMetadata.id
-      };
-      
-      addToLog(`${method} ${endpoint}`, 'success', result);
       return result;
-    }
-    else if (method === 'GET' && endpoint === '/events') {
-      // Mock trả về events
-      const result = {
-        success: true,
-        events: mockEventsDatabase,
-        total: mockEventsDatabase.length,
-        last_updated: new Date().toISOString()
-      };
-      
-      addToLog(`${method} ${endpoint}`, 'success', result);
-      return result;
-    }
-    else {
-      // Mock lỗi nếu endpoint không tồn tại
-      const result = { success: false, error: 'Mock: Endpoint not found' };
-      addToLog(`${method} ${endpoint}`, 'error', result);
-      return result;
+    } catch (error) {
+      console.error('API Error:', error);
+      addToLog(`${method} ${endpoint}`, 'error', { error: error.message });
+      return { success: false, error: error.message };
     }
   }
 
@@ -586,8 +565,8 @@
     
     if (result.success) {
       alert('✅ Test API thành công! Data đã được lưu.');
-      loadEvents(); // Load lại events
-      loadServers(); // Load lại servers
+      loadEvents();
+      loadServers();
     } else {
       alert('❌ Test API thất bại: ' + (result.error || 'Unknown error'));
     }
@@ -601,7 +580,12 @@
       const eventsContainer = document.getElementById('realTimeEvents');
       if (eventsContainer) {
         if (result.events.length === 0) {
-          eventsContainer.innerHTML = '<p>Chưa có event nào được ghi nhận</p>';
+          eventsContainer.innerHTML = `
+            <div class="event-item">
+              <div><strong>🔄 Đang chờ dữ liệu từ Roblox</strong></div>
+              <div>Chạy script trong game để thấy events thật</div>
+            </div>
+          `;
         } else {
           eventsContainer.innerHTML = result.events.map(event => `
             <div class="event-item success">
@@ -621,7 +605,6 @@
     const result = await callAPI('/events', 'GET');
     
     if (result.success && result.events) {
-      // Tạo danh sách server từ events
       const serversMap = new Map();
       
       result.events.forEach(event => {
@@ -648,29 +631,16 @@
     if (!serversContainer) return;
 
     if (activeServers.length === 0) {
-      // Hiển thị mock data
-      const mockServers = [
-        { job_id: 'd3d6af26-e22', players: 'N/A', wait: 'N/A' },
-        { job_id: 'ac60014b-c24', players: 'N/A', wait: 'N/A' },
-        { job_id: '19d7983-00b', players: '4', wait: '0s' }
-      ];
-      
-      serversContainer.innerHTML = mockServers.map(server => `
+      serversContainer.innerHTML = `
         <div class="server-item">
           <div class="server-info">
-            <div class="server-job">Job: ${server.job_id}..</div>
+            <div class="server-job">🔄 Đang chờ dữ liệu...</div>
             <div>
-              <span class="server-players">Players: ${server.players}</span>
-              ${server.wait !== 'N/A' ? `<span class="server-wait"> | Wait: ${server.wait}</span>` : ''}
+              <span class="server-players">Chạy script Roblox để thấy servers thật</span>
             </div>
           </div>
-          <div class="server-actions">
-            <button class="copy-btn" onclick="copyJobId('${server.job_id}')">
-              <i class="fas fa-copy"></i> Copy
-            </button>
-          </div>
         </div>
-      `).join('');
+      `;
     } else {
       serversContainer.innerHTML = activeServers.map(server => `
         <div class="server-item">
@@ -700,43 +670,6 @@
     });
   }
 
-  // Hàm tạo mock data từ Roblox
-  function simulateRobloxData() {
-    const events = [
-      {
-        event_type: "full_moon",
-        boss_name: "Full Moon", 
-        players: "8/12",
-        job_id: "d3d6af26-e22",
-        world: "World3",
-        time_of_day: "20:30:00"
-      },
-      {
-        event_type: "darkbeard",
-        boss_name: "Darkbeard",
-        players: "5/12", 
-        job_id: "ac60014b-c24",
-        world: "World2",
-        time_of_day: "15:45:00"
-      },
-      {
-        event_type: "rip_indra", 
-        boss_name: "Rip Indra True Form",
-        players: "3/12",
-        job_id: "19d7983-00b",
-        world: "World3",
-        time_of_day: "12:15:00"
-      }
-    ];
-
-    // Thêm events ngẫu nhiên
-    const randomEvent = events[Math.floor(Math.random() * events.length)];
-    callAPI('/events', 'POST', {
-      ...randomEvent,
-      timestamp: new Date().toISOString()
-    });
-  }
-
   window.addEventListener('load', () => {
     setTimeout(() => {
       overlay.classList.add('hide');
@@ -747,9 +680,6 @@
                    localStorage.getItem("currentPage") || "home";
       showPage(page);
       updateActiveNav(page);
-
-      // Tạo mock data sau khi load
-      setTimeout(simulateRobloxData, 2000);
     }, 1000);
   });
 
@@ -808,25 +738,21 @@
             </div>
 
             <div class="card">
-              <h3><i class="fas fa-chart-line"></i> Sự Kiện Đang Hoạt Động</h3>
-              ${eventsList.filter(event => event.active).map(event => `
-                <div class="event-status">
-                  <div class="status-indicator" style="background: ${event.color}"></div>
-                  <strong>${event.name}</strong> - ${event.world}
-                </div>
-              `).join('')}
+              <h3><i class="fas fa-chart-line"></i> Trạng Thái Sự Kiện</h3>
+              <div style="text-align: center; padding: 20px;">
+                <i class="fas fa-sync-alt" style="font-size: 48px; color: #feca57; margin-bottom: 15px;"></i>
+                <p><strong>Đang chờ dữ liệu từ Roblox</strong></p>
+                <p>Chạy script trong game để thấy trạng thái thực tế</p>
+              </div>
             </div>
 
             <div class="card">
               <h3><i class="fas fa-plug"></i> Trạng thái hệ thống</h3>
               <p>API Base URL: <code>${API_BASE_URL}</code></p>
-              <p><strong>⚠️ Đang dùng Mock Data</strong> - API thật chưa được deploy</p>
+              <p><strong>✅ CHẾ ĐỘ DATA THẬT</strong> - Chỉ hiển thị dữ liệu từ Roblox</p>
               <div style="display: flex; gap: 10px; margin-top: 15px;">
                 <button onclick="testAPI()" class="btn btn-primary">
                   <i class="fas fa-test"></i> Test API
-                </button>
-                <button onclick="simulateRobloxData()" class="btn" style="background: #666;">
-                  <i class="fas fa-gamepad"></i> Simulate Roblox Data
                 </button>
               </div>
             </div>
@@ -841,7 +767,10 @@
             <div class="card">
               <h3><i class="fas fa-database"></i> Events từ Roblox</h3>
               <div class="event-log" id="realTimeEvents">
-                <p>Đang tải dữ liệu...</p>
+                <div class="event-item">
+                  <div><strong>🔄 Đang chờ dữ liệu...</strong></div>
+                  <div>Chạy script trong game Blox Fruits để thấy events thật</div>
+                </div>
               </div>
               <div style="display: flex; gap: 10px; margin-top: 15px;">
                 <button onclick="loadEvents()" class="btn btn-primary">
@@ -849,9 +778,6 @@
                 </button>
                 <button onclick="testAPI()" class="btn" style="background: #666;">
                   <i class="fas fa-test"></i> Test API
-                </button>
-                <button onclick="simulateRobloxData()" class="btn" style="background: #9C27B0;">
-                  <i class="fas fa-gamepad"></i> Simulate Data
                 </button>
               </div>
             </div>
@@ -867,19 +793,18 @@
               ${eventsList.map(event => `
                 <div class="card">
                   <h3 style="color: ${event.color}">
-                    <i class="fas ${event.active ? 'fa-play' : 'fa-pause'}"></i>
+                    <i class="fas fa-question-circle"></i>
                     ${event.name}
                   </h3>
                   <p><strong>Thế giới:</strong> ${event.world}</p>
                   <p><strong>Trạng thái:</strong> 
-                    <span style="color: ${event.active ? '#4CAF50' : '#f44336'}">
-                      ${event.active ? 'Đang hoạt động' : 'Không hoạt động'}
+                    <span style="color: #888">
+                      Chờ dữ liệu thực tế
                     </span>
                   </p>
                   <div class="event-status">
-                    <div class="status-indicator ${event.active ? '' : 'inactive'}" 
-                         style="background: ${event.color}"></div>
-                    <span>${event.active ? 'Đang diễn ra' : 'Chưa xuất hiện'}</span>
+                    <div class="status-indicator inactive"></div>
+                    <span>Chưa phát hiện</span>
                   </div>
                 </div>
               `).join('')}
@@ -895,14 +820,18 @@
             <div class="card">
               <h3><i class="fas fa-list"></i> Server List</h3>
               <div class="server-list" id="serversList">
-                <p>Đang tải danh sách server...</p>
+                <div class="server-item">
+                  <div class="server-info">
+                    <div class="server-job">🔄 Đang chờ dữ liệu...</div>
+                    <div>
+                      <span class="server-players">Chạy script Roblox để thấy servers thật</span>
+                    </div>
+                  </div>
+                </div>
               </div>
               <div style="display: flex; gap: 10px; margin-top: 15px;">
                 <button onclick="loadServers()" class="btn btn-primary">
                   <i class="fas fa-sync-alt"></i> Refresh Servers
-                </button>
-                <button onclick="simulateRobloxData()" class="btn" style="background: #9C27B0;">
-                  <i class="fas fa-gamepad"></i> Simulate Data
                 </button>
               </div>
             </div>
@@ -912,6 +841,7 @@
               <p>• Click "Copy" để copy Job ID của server</p>
               <p>• Sử dụng Job ID để join server thông qua script</p>
               <p>• Players: Hiển thị số người chơi hiện tại trong server</p>
+              <p><strong>📢 Hiện chỉ hiển thị DATA THẬT từ Roblox</strong></p>
             </div>
           `;
           break;
@@ -945,7 +875,7 @@
               <p>Script Roblox sẽ gửi dữ liệu lên API endpoint:</p>
               <code>${API_BASE_URL}/events</code>
               <p style="margin-top: 10px;">Method: POST</p>
-              <p><strong>⚠️ Hiện đang dùng Mock Data</strong></p>
+              <p><strong>✅ CHẾ ĐỘ DATA THẬT</strong> - Không có mock data</p>
             </div>
           `;
           break;
@@ -985,7 +915,7 @@
             <div class="card">
               <h3><i class="fas fa-code"></i> Base URL</h3>
               <p><code>${API_BASE_URL}</code></p>
-              <p><strong>⚠️ Đang dùng Mock Data</strong> - API thật chưa được deploy</p>
+              <p><strong>✅ CHẾ ĐỘ DATA THẬT</strong> - Không có mock data</p>
               
               <div style="margin-top: 20px;">
                 <h4><i class="fas fa-paper-plane"></i> Gửi sự kiện</h4>
@@ -1013,14 +943,9 @@
             <div class="card">
               <h3><i class="fas fa-key"></i> Test API</h3>
               <p>Kiểm tra kết nối API của bạn</p>
-              <div style="display: flex; gap: 10px;">
-                <button onclick="testAPI()" class="btn btn-primary">
-                  <i class="fas fa-test"></i> Test API Connection
-                </button>
-                <button onclick="simulateRobloxData()" class="btn" style="background: #9C27B0;">
-                  <i class="fas fa-gamepad"></i> Simulate Roblox Data
-                </button>
-              </div>
+              <button onclick="testAPI()" class="btn btn-primary">
+                <i class="fas fa-test"></i> Test API Connection
+              </button>
             </div>
           `;
           break;
@@ -1028,7 +953,6 @@
 
       mainContent.innerHTML = content;
       
-      // Thêm event listener cho nút Discord
       const discordBtn = document.getElementById("discordBtn");
       if (discordBtn) {
         discordBtn.addEventListener("click", () => {
@@ -1036,7 +960,6 @@
         });
       }
 
-      // Load data nếu đang ở trang tương ứng
       if (page === 'events') {
         setTimeout(() => {
           loadEvents();
@@ -1085,11 +1008,7 @@
     }
   }, 30000);
 
-  // Tự động tạo mock data mỗi 2 phút
-  setInterval(() => {
-    simulateRobloxData();
-  }, 120000);
+  console.log("✅ Saki Hub - CHẾ ĐỘ DATA THẬT: Đã tắt hoàn toàn mock data");
 </script>
-
 </body>
 </html>
