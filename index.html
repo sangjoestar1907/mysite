@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Saki Hub</title>
+  <title>Saki Hub - Blox Fruits Event Tracker</title>
   <link rel="icon" type="image/png" href="logo.png">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
   <style>
@@ -82,6 +82,12 @@
       padding: 24px;
       margin: 20px 0;
       border: 1px solid var(--border-color);
+      transition: all 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     }
 
     .card h3 {
@@ -105,10 +111,11 @@
       border-radius: 12px;
       padding: 20px;
       border: 1px solid var(--border-color);
+      transition: all 0.3s ease;
       text-decoration: none;
       color: inherit;
       display: block;
-      transition: all 0.3s ease;
+      cursor: pointer;
     }
 
     .event-card:hover {
@@ -161,6 +168,161 @@
       font-size: 12px;
     }
 
+    /* Server List */
+    .server-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 15px 0;
+    }
+
+    .server-item {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 15px;
+      font-family: 'Courier New', monospace;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .server-info {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .server-job {
+      color: var(--primary-color);
+      font-weight: bold;
+    }
+
+    .server-players {
+      color: var(--success-color);
+      font-size: 12px;
+    }
+
+    .server-wait {
+      color: var(--secondary-color);
+      font-size: 12px;
+    }
+
+    .server-time {
+      color: var(--text-muted);
+      font-size: 10px;
+      margin-top: 2px;
+    }
+
+    .server-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .copy-btn {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.3s ease;
+    }
+
+    .copy-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+      background: linear-gradient(45deg, var(--secondary-color), var(--primary-color));
+      color: #000;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(254, 202, 87, 0.3);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Loading */
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: var(--text-muted);
+    }
+
+    .loading-spinner {
+      border: 3px solid rgba(255, 255, 255, 0.1);
+      border-top: 3px solid var(--primary-color);
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 15px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 30px;
+      margin-top: 50px;
+      border-top: 1px solid var(--border-color);
+      background: rgba(0, 0, 0, 0.8);
+    }
+
+    /* Back Button */
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--primary-color);
+      text-decoration: none;
+      margin-bottom: 20px;
+      transition: all 0.3s ease;
+    }
+
+    .back-btn:hover {
+      transform: translateX(-5px);
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 40px;
+      color: var(--text-muted);
+    }
+
+    .empty-state i {
+      font-size: 48px;
+      margin-bottom: 15px;
+      opacity: 0.5;
+    }
+
     /* Real Data Badge */
     .real-data-badge {
       background: var(--success-color);
@@ -181,13 +343,28 @@
       margin: 15px 0;
     }
 
-    /* Footer */
-    footer {
-      text-align: center;
-      padding: 30px;
-      margin-top: 50px;
-      border-top: 1px solid var(--border-color);
-      background: rgba(0, 0, 0, 0.8);
+    /* Notification */
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: var(--success-color);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      z-index: 10000;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    @keyframes slideOut {
+      from { transform: translateX(0); opacity: 1; }
+      to { transform: translateX(100%); opacity: 0; }
     }
 
     /* Responsive */
@@ -200,19 +377,16 @@
       .events-grid {
         grid-template-columns: 1fr;
       }
-    }
-
-    /* Notification */
-    .notification {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: var(--success-color);
-      color: white;
-      padding: 12px 20px;
-      border-radius: 8px;
-      z-index: 10000;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      
+      .server-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+      
+      .server-actions {
+        align-self: flex-end;
+      }
     }
   </style>
 </head>
@@ -247,6 +421,11 @@
           <div class="events-grid" id="events-grid">
             <!-- Events sẽ được thêm bằng JavaScript -->
           </div>
+          <div style="text-align: center; margin-top: 15px;">
+            <button onclick="loadEventsGrid()" class="btn">
+              <i class="fas fa-sync-alt"></i> Refresh
+            </button>
+          </div>
         </div>
 
         <div class="card">
@@ -255,6 +434,11 @@
           <p><strong>Trạng thái:</strong> <span class="real-data-badge">CHỈ DATA THẬT</span></p>
           <p><strong>Tổng số server đang theo dõi:</strong> <span id="total-real-servers">0</span> server thật</p>
         </div>
+      </div>
+
+      <!-- Trang event detail -->
+      <div id="event-page" style="display: none;">
+        <!-- Nội dung trang event sẽ được thêm bằng JavaScript -->
       </div>
     </div>
   </div>
@@ -265,7 +449,8 @@
   </footer>
 
   <script>
-    // Dữ liệu events - LUÔN HIỂN THỊ TẤT CẢ
+    const API_BASE_URL = 'https://saki-hub.vercel.app/api';
+    
     const eventsList = [
       { 
         name: "Full Moon", 
@@ -285,7 +470,7 @@
         name: "Mystic Island", 
         icon: "fas fa-mountain",
         endpoint: "mysticisland",
-        color: "#2196F50",
+        color: "#2196F3",
         description: "Hòn đảo thần bí xuất hiện"
       },
       { 
@@ -318,17 +503,53 @@
       }
     ];
 
-    // Hiển thị tất cả events ngay khi load
+    // Khởi tạo ứng dụng
+    function init() {
+      loadHomePage();
+      setupRouting();
+      updateTotalServers();
+    }
+
+    // Thiết lập routing
+    function setupRouting() {
+      window.addEventListener('hashchange', handleRoute);
+      handleRoute();
+    }
+
+    // Xử lý route
+    function handleRoute() {
+      const hash = window.location.hash.substring(1);
+      
+      if (hash.startsWith('event-')) {
+        const eventEndpoint = hash.replace('event-', '');
+        showEventPage(eventEndpoint);
+      } else {
+        showHomePage();
+      }
+    }
+
+    // Hiển thị trang chủ
+    function showHomePage() {
+      document.getElementById('home-page').style.display = 'block';
+      document.getElementById('event-page').style.display = 'none';
+      loadEventsGrid();
+      updateTotalServers();
+    }
+
+    // Hiển thị trang event
+    function showEventPage(eventEndpoint) {
+      document.getElementById('home-page').style.display = 'none';
+      document.getElementById('event-page').style.display = 'block';
+      loadEventDetail(eventEndpoint);
+    }
+
+    // Tải grid events - HIỂN THỊ TẤT CẢ EVENT
     function loadEventsGrid() {
       const eventsGrid = document.getElementById('events-grid');
       
-      if (!eventsGrid) {
-        console.error('Không tìm thấy events-grid element');
-        return;
-      }
-
+      // HIỂN THỊ TẤT CẢ EVENT NGAY LẬP TỨC
       eventsGrid.innerHTML = eventsList.map(event => `
-        <div class="event-card" onclick="showEventDetail('${event.endpoint}')">
+        <a href="#event-${event.endpoint}" class="event-card">
           <div class="event-header">
             <div class="event-icon" style="color: ${event.color}">
               <i class="${event.icon}"></i>
@@ -339,37 +560,255 @@
             </div>
           </div>
           <div class="event-stats">
-            <span class="server-count empty">
+            <span class="server-count empty" id="count-${event.endpoint}">
               <i class="fas fa-server"></i>
-              <span>0 server thật</span>
+              <span>Đang tải...</span>
             </span>
-            <span class="api-link">/api/events/${event.endpoint}</span>
+            <span class="api-link">/api/${event.endpoint}</span>
+          </div>
+        </a>
+      `).join('');
+
+      // Tải số lượng server THẬT cho mỗi event
+      eventsList.forEach(event => {
+        loadEventServerCount(event.endpoint);
+      });
+    }
+
+    // Tải số lượng server THẬT của event
+    async function loadEventServerCount(eventEndpoint) {
+      try {
+        const response = await fetch(`${API_BASE_URL}/${eventEndpoint}`);
+        const result = await response.json();
+        
+        const countElement = document.getElementById(`count-${eventEndpoint}`);
+        if (countElement) {
+          const countSpan = countElement.querySelector('span');
+          if (result.success) {
+            if (result.servers && result.servers.length > 0) {
+              countSpan.textContent = `${result.servers.length} server thật`;
+              countElement.className = "server-count";
+            } else {
+              countSpan.textContent = "0 server thật";
+              countElement.className = "server-count empty";
+            }
+          }
+        }
+      } catch (error) {
+        const countElement = document.getElementById(`count-${eventEndpoint}`);
+        if (countElement) {
+          const countSpan = countElement.querySelector('span');
+          countSpan.textContent = "0 server thật";
+          countElement.className = "server-count empty";
+        }
+      }
+    }
+
+    // Cập nhật tổng số server thật
+    async function updateTotalServers() {
+      let totalServers = 0;
+      
+      for (const event of eventsList) {
+        try {
+          const response = await fetch(`${API_BASE_URL}/${event.endpoint}`);
+          const result = await response.json();
+          
+          if (result.success && result.servers) {
+            totalServers += result.servers.length;
+          }
+        } catch (error) {
+          console.error(`Lỗi khi tải ${event.name}:`, error);
+        }
+      }
+      
+      document.getElementById('total-real-servers').textContent = totalServers;
+    }
+
+    // Tải chi tiết event
+    async function loadEventDetail(eventEndpoint) {
+      const eventPage = document.getElementById('event-page');
+      const event = eventsList.find(e => e.endpoint === eventEndpoint);
+      
+      if (!event) {
+        eventPage.innerHTML = `
+          <div class="empty-state">
+            <i class="fas fa-exclamation-triangle"></i>
+            <h3>Event không tồn tại</h3>
+            <a href="#" class="back-btn" onclick="showHomePage()">
+              <i class="fas fa-arrow-left"></i> Quay lại trang chủ
+            </a>
+          </div>
+        `;
+        return;
+      }
+
+      // Hiển thị trang event
+      eventPage.innerHTML = `
+        <a href="#" class="back-btn" onclick="showHomePage()">
+          <i class="fas fa-arrow-left"></i> Quay lại trang chủ
+        </a>
+        
+        <div class="card">
+          <div class="event-header">
+            <div class="event-icon" style="color: ${event.color}; font-size: 32px;">
+              <i class="${event.icon}"></i>
+            </div>
+            <div>
+              <h1 style="color: ${event.color}; margin: 0">${event.name}</h1>
+              <p style="color: var(--text-muted); margin: 5px 0 0 0;">${event.description}</p>
+            </div>
           </div>
         </div>
-      `).join('');
-    }
 
-    // Hiển thị trang event detail
-    function showEventDetail(eventEndpoint) {
-      const event = eventsList.find(e => e.endpoint === eventEndpoint);
-      if (!event) return;
+        <div class="warning-box">
+          <h4><i class="fas fa-info-circle"></i> Thông tin quan trọng</h4>
+          <p><strong>📡 Dữ liệu thời gian thực:</strong> Chỉ hiển thị server THẬT từ Roblox</p>
+          <p><strong>🕒 Cập nhật tự động:</strong> Dữ liệu được làm mới mỗi 10 giây</p>
+          <p><strong>🔧 Cần chạy script Roblox để thấy servers!</strong></p>
+        </div>
 
-      // Tạo modal hoặc chuyển trang đơn giản
-      alert(`Trang chi tiết cho: ${event.name}\n\nHiện chưa có server nào cho sự kiện này.\n\nCần chạy script Roblox để gửi dữ liệu server.`);
-    }
+        <div class="card">
+          <h3><i class="fas fa-server"></i> Danh Sách Server THẬT</h3>
+          <div id="event-servers">
+            <div class="loading">
+              <div class="loading-spinner"></div>
+              <p>Đang tải danh sách server THẬT...</p>
+            </div>
+          </div>
+          <div style="display: flex; gap: 10px; margin-top: 15px;">
+            <button onclick="loadEventDetail('${eventEndpoint}')" class="btn">
+              <i class="fas fa-sync-alt"></i> Refresh
+            </button>
+            <a href="${API_BASE_URL}/${eventEndpoint}" target="_blank" class="btn btn-secondary">
+              <i class="fas fa-code"></i> View API
+            </a>
+          </div>
+        </div>
 
-    // Khởi tạo khi trang load
-    document.addEventListener('DOMContentLoaded', function() {
-      console.log('🚀 Saki Hub đang khởi động...');
-      loadEventsGrid();
-    });
+        <div class="card">
+          <h3><i class="fas fa-info-circle"></i> Thông Tin Sự Kiện</h3>
+          <p><strong>API Endpoint:</strong> <code>${API_BASE_URL}/${eventEndpoint}</code></p>
+          <p><strong>World:</strong> World 3</p>
+          <p><strong>Trạng thái:</strong> <span class="real-data-badge">CHỈ DATA THẬT</span></p>
+          <p><strong>Tổng server:</strong> <span id="event-server-count">Đang tải...</span></p>
+        </div>
+      `;
 
-    // Fallback: thử load lại sau 1 giây nếu có lỗi
-    setTimeout(() => {
-      if (document.getElementById('events-grid').innerHTML === '') {
-        loadEventsGrid();
+      // Tải danh sách server THẬT
+      try {
+        const response = await fetch(`${API_BASE_URL}/${eventEndpoint}`);
+        const result = await response.json();
+        
+        const serversContainer = document.getElementById('event-servers');
+        const serverCountElement = document.getElementById('event-server-count');
+        
+        if (result.success) {
+          if (result.servers && result.servers.length > 0) {
+            serverCountElement.textContent = `${result.servers.length} server thật`;
+            serverCountElement.style.color = "var(--success-color)";
+            
+            serversContainer.innerHTML = `
+              <div class="server-list">
+                ${result.servers.map(server => `
+                  <div class="server-item">
+                    <div class="server-info">
+                      <div class="server-job">Job: ${formatJobId(server.job_id)}</div>
+                      <div>
+                        <span class="server-players">Players: ${server.players}</span>
+                        ${server.wait ? `<span class="server-wait"> | Wait: ${server.wait}</span>` : ''}
+                      </div>
+                      <div class="server-time">
+                        Cập nhật: ${new Date(server.timestamp).toLocaleTimeString('vi-VN')}
+                      </div>
+                    </div>
+                    <div class="server-actions">
+                      <button class="copy-btn" onclick="copyJobId('${server.job_id}')">
+                        <i class="fas fa-copy"></i> Copy
+                      </button>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            `;
+          } else {
+            serverCountElement.textContent = "0 server thật";
+            serverCountElement.style.color = "var(--text-muted)";
+            
+            serversContainer.innerHTML = `
+              <div class="empty-state">
+                <i class="fas fa-database"></i>
+                <h3>🔄 Đang chờ dữ liệu thật</h3>
+                <p>Chưa có server nào được ghi nhận có sự kiện ${event.name}</p>
+                <p style="font-size: 14px; margin-top: 10px;">
+                  <strong>📡 Cần chạy script Roblox để thấy servers thật!</strong>
+                </p>
+              </div>
+            `;
+          }
+        }
+      } catch (error) {
+        const serversContainer = document.getElementById('event-servers');
+        const serverCountElement = document.getElementById('event-server-count');
+        
+        serverCountElement.textContent = "0 server thật";
+        serverCountElement.style.color = "var(--text-muted)";
+        
+        serversContainer.innerHTML = `
+          <div class="empty-state">
+            <i class="fas fa-database"></i>
+            <h3>🔄 Đang chờ dữ liệu thật</h3>
+            <p>Chưa có server nào được ghi nhận có sự kiện ${event.name}</p>
+          </div>
+        `;
       }
-    }, 1000);
+    }
+
+    // Format Job ID
+    function formatJobId(jobId) {
+      if (!jobId) return 'N/A';
+      if (jobId.length <= 20) return jobId;
+      return jobId.substring(0, 15) + '..';
+    }
+
+    // Copy Job ID
+    function copyJobId(jobId) {
+      navigator.clipboard.writeText(jobId).then(() => {
+        showNotification(`Đã copy Job ID: ${formatJobId(jobId)}`);
+      });
+    }
+
+    // Hiển thị notification
+    function showNotification(message) {
+      const notification = document.createElement('div');
+      notification.className = 'notification';
+      notification.innerHTML = `
+        <i class="fas fa-check"></i> ${message}
+      `;
+      
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => {
+          if (document.body.contains(notification)) {
+            document.body.removeChild(notification);
+          }
+        }, 300);
+      }, 3000);
+    }
+
+    // Tự động refresh data mỗi 10 giây
+    setInterval(() => {
+      if (document.getElementById('home-page').style.display !== 'none') {
+        loadEventsGrid();
+        updateTotalServers();
+      }
+    }, 10000);
+
+    // Khởi động ứng dụng
+    document.addEventListener('DOMContentLoaded', init);
+
+    console.log("🚀 Saki Hub - Website đã sẵn sàng hiển thị events!");
   </script>
 </body>
 </html>
