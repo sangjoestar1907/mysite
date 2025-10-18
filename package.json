@@ -1,12 +1,8 @@
 {
   "name": "saki-hub",
   "version": "1.0.0",
+  "type": "module",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start"
-  },
-  "dependencies": {
-    "next": "^13.0.0"
+    "dev": "node api/events.js"
   }
 }
