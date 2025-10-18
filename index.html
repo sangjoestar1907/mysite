@@ -163,6 +163,10 @@
       color: var(--success-color);
     }
 
+    .server-count.empty {
+      color: var(--text-muted);
+    }
+
     .api-link {
       color: var(--text-muted);
       font-family: monospace;
@@ -515,10 +519,11 @@
       loadEventDetail(eventEndpoint);
     }
 
-    // Tải grid events
+    // Tải grid events - LUÔN HIỂN THỊ TẤT CẢ EVENT
     function loadEventsGrid() {
       const eventsGrid = document.getElementById('events-grid');
       
+      // Hiển thị tất cả event ngay lập tức
       eventsGrid.innerHTML = eventsList.map(event => `
         <a href="#event-${event.endpoint}" class="event-card">
           <div class="event-header">
@@ -531,9 +536,9 @@
             </div>
           </div>
           <div class="event-stats">
-            <span class="server-count">
+            <span class="server-count" id="count-${event.endpoint}">
               <i class="fas fa-server"></i>
-              <span id="count-${event.endpoint}">Đang tải...</span>
+              <span>Đang tải...</span>
             </span>
             <span class="api-link">/api/${event.endpoint}</span>
           </div>
@@ -552,21 +557,25 @@
         const response = await fetch(`${API_BASE_URL}/${eventEndpoint}`);
         const result = await response.json();
         
-        const countElement = document.getElementById(`count-${eventEndpoint}`);
-        if (countElement && result.success) {
-          if (result.servers.length > 0) {
-            countElement.textContent = `${result.servers.length} server thật`;
-            countElement.style.color = "var(--success-color)";
-          } else {
-            countElement.textContent = "Chưa có server thật";
-            countElement.style.color = "var(--text-muted)";
+        const countElement = document.getElementById(`count-${event.endpoint}`);
+        if (countElement) {
+          const countSpan = countElement.querySelector('span');
+          if (result.success) {
+            if (result.servers.length > 0) {
+              countSpan.textContent = `${result.servers.length} server thật`;
+              countElement.className = "server-count";
+            } else {
+              countSpan.textContent = "Chưa có server thật";
+              countElement.className = "server-count empty";
+            }
           }
         }
       } catch (error) {
-        const countElement = document.getElementById(`count-${eventEndpoint}`);
+        const countElement = document.getElementById(`count-${event.endpoint}`);
         if (countElement) {
-          countElement.textContent = "Lỗi tải dữ liệu";
-          countElement.style.color = "var(--error-color)";
+          const countSpan = countElement.querySelector('span');
+          countSpan.textContent = "Lỗi tải dữ liệu";
+          countElement.className = "server-count empty";
         }
       }
     }
@@ -591,7 +600,7 @@
       document.getElementById('total-real-servers').textContent = totalServers;
     }
 
-    // Tải chi tiết event
+    // Tải chi tiết event - LUÔN HIỂN THỊ TRANG EVENT DÙ KHÔNG CÓ DỮ LIỆU
     async function loadEventDetail(eventEndpoint) {
       const eventPage = document.getElementById('event-page');
       const event = eventsList.find(e => e.endpoint === eventEndpoint);
@@ -609,7 +618,7 @@
         return;
       }
 
-      // Hiển thị loading
+      // Hiển thị trang event ngay lập tức
       eventPage.innerHTML = `
         <a href="#" class="back-btn" onclick="showHomePage()">
           <i class="fas fa-arrow-left"></i> Quay lại trang chủ
@@ -669,53 +678,57 @@
         const serversContainer = document.getElementById('event-servers');
         const serverCountElement = document.getElementById('event-server-count');
         
-        if (result.success && result.servers && result.servers.length > 0) {
-          serverCountElement.textContent = `${result.servers.length} server thật`;
-          serverCountElement.style.color = "var(--success-color)";
-          
-          serversContainer.innerHTML = `
-            <div class="server-list">
-              ${result.servers.map(server => `
-                <div class="server-item">
-                  <div class="server-info">
-                    <div class="server-job">Job: ${formatJobId(server.job_id)}</div>
-                    <div>
-                      <span class="server-players">Players: ${server.players}</span>
-                      ${server.wait ? `<span class="server-wait"> | Wait: ${server.wait}</span>` : ''}
+        if (result.success) {
+          // LUÔN HIỂN THỊ KẾT QUẢ DÙ CÓ DỮ LIỆU HAY KHÔNG
+          if (result.servers && result.servers.length > 0) {
+            serverCountElement.textContent = `${result.servers.length} server thật`;
+            serverCountElement.style.color = "var(--success-color)";
+            
+            serversContainer.innerHTML = `
+              <div class="server-list">
+                ${result.servers.map(server => `
+                  <div class="server-item">
+                    <div class="server-info">
+                      <div class="server-job">Job: ${formatJobId(server.job_id)}</div>
+                      <div>
+                        <span class="server-players">Players: ${server.players}</span>
+                        ${server.wait ? `<span class="server-wait"> | Wait: ${server.wait}</span>` : ''}
+                      </div>
+                      <div class="server-time">
+                        Cập nhật: ${new Date(server.timestamp).toLocaleTimeString('vi-VN')}
+                      </div>
                     </div>
-                    <div class="server-time">
-                      Cập nhật: ${new Date(server.timestamp).toLocaleTimeString('vi-VN')}
+                    <div class="server-actions">
+                      <button class="copy-btn" onclick="copyJobId('${server.job_id}')">
+                        <i class="fas fa-copy"></i> Copy
+                      </button>
                     </div>
                   </div>
-                  <div class="server-actions">
-                    <button class="copy-btn" onclick="copyJobId('${server.job_id}')">
-                      <i class="fas fa-copy"></i> Copy
-                    </button>
-                  </div>
-                </div>
-              `).join('')}
-            </div>
-          `;
-        } else {
-          serverCountElement.textContent = "0 server thật";
-          serverCountElement.style.color = "var(--text-muted)";
-          
-          serversContainer.innerHTML = `
-            <div class="empty-state">
-              <i class="fas fa-database"></i>
-              <h3>🔄 Đang chờ dữ liệu thật</h3>
-              <p>Chưa có server nào được ghi nhận có sự kiện ${event.name}</p>
-              <p style="font-size: 14px; margin-top: 10px;">
-                <strong>📡 Cần chạy script Roblox để thấy servers thật!</strong>
-              </p>
-              <div style="margin-top: 15px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 8px;">
-                <p style="font-size: 12px; color: var(--text-muted);">
-                  <i class="fas fa-lightbulb"></i> 
-                  <strong>Hướng dẫn:</strong> Chạy script Roblox trong game để gửi dữ liệu server lên hệ thống
-                </p>
+                `).join('')}
               </div>
-            </div>
-          `;
+            `;
+          } else {
+            // KHÔNG CÓ SERVER - VẪN HIỂN THỊ THÔNG BÁO RÕ RÀNG
+            serverCountElement.textContent = "0 server thật";
+            serverCountElement.style.color = "var(--text-muted)";
+            
+            serversContainer.innerHTML = `
+              <div class="empty-state">
+                <i class="fas fa-database"></i>
+                <h3>🔄 Đang chờ dữ liệu thật</h3>
+                <p>Chưa có server nào được ghi nhận có sự kiện ${event.name}</p>
+                <p style="font-size: 14px; margin-top: 10px;">
+                  <strong>📡 Cần chạy script Roblox để thấy servers thật!</strong>
+                </p>
+                <div style="margin-top: 15px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 8px;">
+                  <p style="font-size: 12px; color: var(--text-muted);">
+                    <i class="fas fa-lightbulb"></i> 
+                    <strong>Hướng dẫn:</strong> Chạy script Roblox trong game để gửi dữ liệu server lên hệ thống
+                  </p>
+                </div>
+              </div>
+            `;
+          }
         }
       } catch (error) {
         const serversContainer = document.getElementById('event-servers');
@@ -753,7 +766,6 @@
 
     // Hiển thị notification
     function showNotification(message) {
-      // Tạo notification element
       const notification = document.createElement('div');
       notification.style.cssText = `
         position: fixed;
