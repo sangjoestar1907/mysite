@@ -474,10 +474,13 @@
   const mainContent = document.getElementById('mainContent');
   const logo = document.getElementById('logo');
 
-  // API Configuration
+  // API Configuration - DÙNG MOCK DATA
   const API_BASE_URL = 'https://saki-hub.vercel.app/api';
   let eventsLog = [];
   let activeServers = [];
+
+  // Mock database
+  let mockEventsDatabase = [];
 
   // Danh sách sự kiện Blox Fruits
   const eventsList = [
@@ -490,31 +493,49 @@
     { name: "Cursed Captain", world: "World 2", active: false, color: "#795548" }
   ];
 
-  // Hàm gọi API
+  // Hàm gọi API - DÙNG MOCK
   async function callAPI(endpoint, method = 'GET', data = null) {
-    try {
-      const options = {
-        method: method,
-        headers: {
-          'Content-Type': 'application/json',
-        }
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 300));
+    
+    if (method === 'POST' && endpoint === '/events') {
+      // Mock nhận event từ Roblox
+      const eventWithMetadata = {
+        ...data,
+        id: Date.now(),
+        received_at: new Date().toISOString(),
+        server_time: new Date().toLocaleString('vi-VN')
       };
-
-      if (data && (method === 'POST' || method === 'PUT')) {
-        options.body = JSON.stringify(data);
-      }
-
-      const response = await fetch(`${API_BASE_URL}${endpoint}`, options);
-      const result = await response.json();
       
-      // Thêm vào log
-      addToLog(`${method} ${endpoint}`, result.success ? 'success' : 'error', result);
+      mockEventsDatabase.unshift(eventWithMetadata);
+      if (mockEventsDatabase.length > 50) mockEventsDatabase = mockEventsDatabase.slice(0, 50);
       
+      const result = { 
+        success: true, 
+        message: `Mock: Đã nhận event ${data.event_type}`,
+        event_id: eventWithMetadata.id
+      };
+      
+      addToLog(`${method} ${endpoint}`, 'success', result);
       return result;
-    } catch (error) {
-      console.error('API Error:', error);
-      addToLog(`${method} ${endpoint}`, 'error', { error: error.message });
-      return { success: false, error: error.message };
+    }
+    else if (method === 'GET' && endpoint === '/events') {
+      // Mock trả về events
+      const result = {
+        success: true,
+        events: mockEventsDatabase,
+        total: mockEventsDatabase.length,
+        last_updated: new Date().toISOString()
+      };
+      
+      addToLog(`${method} ${endpoint}`, 'success', result);
+      return result;
+    }
+    else {
+      // Mock lỗi nếu endpoint không tồn tại
+      const result = { success: false, error: 'Mock: Endpoint not found' };
+      addToLog(`${method} ${endpoint}`, 'error', result);
+      return result;
     }
   }
 
@@ -528,10 +549,9 @@
       timestamp: new Date().toLocaleString('vi-VN')
     };
     
-    eventsLog.unshift(logItem); // Thêm vào đầu mảng
-    if (eventsLog.length > 50) eventsLog = eventsLog.slice(0, 50); // Giới hạn 50 items
+    eventsLog.unshift(logItem);
+    if (eventsLog.length > 50) eventsLog = eventsLog.slice(0, 50);
     
-    // Cập nhật UI nếu đang ở trang events
     if (document.getElementById('eventsLog')) {
       updateEventsLog();
     }
@@ -565,8 +585,9 @@
     const result = await callAPI('/events', 'POST', testData);
     
     if (result.success) {
-      alert('✅ Test API thành công!');
+      alert('✅ Test API thành công! Data đã được lưu.');
       loadEvents(); // Load lại events
+      loadServers(); // Load lại servers
     } else {
       alert('❌ Test API thất bại: ' + (result.error || 'Unknown error'));
     }
@@ -627,7 +648,7 @@
     if (!serversContainer) return;
 
     if (activeServers.length === 0) {
-      // Hiển thị mock data nếu không có server nào
+      // Hiển thị mock data
       const mockServers = [
         { job_id: 'd3d6af26-e22', players: 'N/A', wait: 'N/A' },
         { job_id: 'ac60014b-c24', players: 'N/A', wait: 'N/A' },
@@ -679,6 +700,43 @@
     });
   }
 
+  // Hàm tạo mock data từ Roblox
+  function simulateRobloxData() {
+    const events = [
+      {
+        event_type: "full_moon",
+        boss_name: "Full Moon", 
+        players: "8/12",
+        job_id: "d3d6af26-e22",
+        world: "World3",
+        time_of_day: "20:30:00"
+      },
+      {
+        event_type: "darkbeard",
+        boss_name: "Darkbeard",
+        players: "5/12", 
+        job_id: "ac60014b-c24",
+        world: "World2",
+        time_of_day: "15:45:00"
+      },
+      {
+        event_type: "rip_indra", 
+        boss_name: "Rip Indra True Form",
+        players: "3/12",
+        job_id: "19d7983-00b",
+        world: "World3",
+        time_of_day: "12:15:00"
+      }
+    ];
+
+    // Thêm events ngẫu nhiên
+    const randomEvent = events[Math.floor(Math.random() * events.length)];
+    callAPI('/events', 'POST', {
+      ...randomEvent,
+      timestamp: new Date().toISOString()
+    });
+  }
+
   window.addEventListener('load', () => {
     setTimeout(() => {
       overlay.classList.add('hide');
@@ -689,6 +747,9 @@
                    localStorage.getItem("currentPage") || "home";
       showPage(page);
       updateActiveNav(page);
+
+      // Tạo mock data sau khi load
+      setTimeout(simulateRobloxData, 2000);
     }, 1000);
   });
 
@@ -759,9 +820,15 @@
             <div class="card">
               <h3><i class="fas fa-plug"></i> Trạng thái hệ thống</h3>
               <p>API Base URL: <code>${API_BASE_URL}</code></p>
-              <button onclick="testAPI()" class="btn btn-primary">
-                <i class="fas fa-test"></i> Test API Connection
-              </button>
+              <p><strong>⚠️ Đang dùng Mock Data</strong> - API thật chưa được deploy</p>
+              <div style="display: flex; gap: 10px; margin-top: 15px;">
+                <button onclick="testAPI()" class="btn btn-primary">
+                  <i class="fas fa-test"></i> Test API
+                </button>
+                <button onclick="simulateRobloxData()" class="btn" style="background: #666;">
+                  <i class="fas fa-gamepad"></i> Simulate Roblox Data
+                </button>
+              </div>
             </div>
           `;
           break;
@@ -782,6 +849,9 @@
                 </button>
                 <button onclick="testAPI()" class="btn" style="background: #666;">
                   <i class="fas fa-test"></i> Test API
+                </button>
+                <button onclick="simulateRobloxData()" class="btn" style="background: #9C27B0;">
+                  <i class="fas fa-gamepad"></i> Simulate Data
                 </button>
               </div>
             </div>
@@ -831,6 +901,9 @@
                 <button onclick="loadServers()" class="btn btn-primary">
                   <i class="fas fa-sync-alt"></i> Refresh Servers
                 </button>
+                <button onclick="simulateRobloxData()" class="btn" style="background: #9C27B0;">
+                  <i class="fas fa-gamepad"></i> Simulate Data
+                </button>
               </div>
             </div>
 
@@ -872,6 +945,7 @@
               <p>Script Roblox sẽ gửi dữ liệu lên API endpoint:</p>
               <code>${API_BASE_URL}/events</code>
               <p style="margin-top: 10px;">Method: POST</p>
+              <p><strong>⚠️ Hiện đang dùng Mock Data</strong></p>
             </div>
           `;
           break;
@@ -911,6 +985,7 @@
             <div class="card">
               <h3><i class="fas fa-code"></i> Base URL</h3>
               <p><code>${API_BASE_URL}</code></p>
+              <p><strong>⚠️ Đang dùng Mock Data</strong> - API thật chưa được deploy</p>
               
               <div style="margin-top: 20px;">
                 <h4><i class="fas fa-paper-plane"></i> Gửi sự kiện</h4>
@@ -938,9 +1013,14 @@
             <div class="card">
               <h3><i class="fas fa-key"></i> Test API</h3>
               <p>Kiểm tra kết nối API của bạn</p>
-              <button onclick="testAPI()" class="btn btn-primary">
-                <i class="fas fa-test"></i> Test API Connection
-              </button>
+              <div style="display: flex; gap: 10px;">
+                <button onclick="testAPI()" class="btn btn-primary">
+                  <i class="fas fa-test"></i> Test API Connection
+                </button>
+                <button onclick="simulateRobloxData()" class="btn" style="background: #9C27B0;">
+                  <i class="fas fa-gamepad"></i> Simulate Roblox Data
+                </button>
+              </div>
             </div>
           `;
           break;
@@ -1004,6 +1084,11 @@
       loadServers();
     }
   }, 30000);
+
+  // Tự động tạo mock data mỗi 2 phút
+  setInterval(() => {
+    simulateRobloxData();
+  }, 120000);
 </script>
 
 </body>
