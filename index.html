@@ -316,6 +316,64 @@
       margin-top: 5px;
     }
 
+    /* Server List */
+    .server-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 15px 0;
+    }
+
+    .server-item {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 15px;
+      font-family: 'Courier New', monospace;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .server-info {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .server-job {
+      color: #feca57;
+      font-weight: bold;
+    }
+
+    .server-players {
+      color: #4CAF50;
+    }
+
+    .server-wait {
+      color: #ff6b6b;
+    }
+
+    .server-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .copy-btn {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.3s ease;
+    }
+
+    .copy-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
     /* Footer */
     footer {
       text-align: center;
@@ -339,6 +397,16 @@
       .dropdown-content {
         width: 250px;
         left: -250px;
+      }
+      
+      .server-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+      
+      .server-actions {
+        align-self: flex-end;
       }
     }
   </style>
@@ -371,6 +439,10 @@
   <a href="#" data-page="events">
     <i class="fas fa-calendar-alt"></i>
     Sự Kiện Game
+  </a>
+  <a href="#" data-page="servers">
+    <i class="fas fa-server"></i>
+    Servers
   </a>
   <a href="#" data-page="script">
     <i class="fas fa-code"></i>
@@ -405,6 +477,7 @@
   // API Configuration
   const API_BASE_URL = 'https://saki-hub.vercel.app/api';
   let eventsLog = [];
+  let activeServers = [];
 
   // Danh sách sự kiện Blox Fruits
   const eventsList = [
@@ -520,6 +593,90 @@
         }
       }
     }
+  }
+
+  // Hàm load servers từ API
+  async function loadServers() {
+    const result = await callAPI('/events', 'GET');
+    
+    if (result.success && result.events) {
+      // Tạo danh sách server từ events
+      const serversMap = new Map();
+      
+      result.events.forEach(event => {
+        if (event.job_id) {
+          if (!serversMap.has(event.job_id)) {
+            serversMap.set(event.job_id, {
+              job_id: event.job_id,
+              players: event.players || 'N/A',
+              last_event: event.event_type,
+              timestamp: event.received_at
+            });
+          }
+        }
+      });
+      
+      activeServers = Array.from(serversMap.values());
+      updateServersDisplay();
+    }
+  }
+
+  // Hàm hiển thị servers
+  function updateServersDisplay() {
+    const serversContainer = document.getElementById('serversList');
+    if (!serversContainer) return;
+
+    if (activeServers.length === 0) {
+      // Hiển thị mock data nếu không có server nào
+      const mockServers = [
+        { job_id: 'd3d6af26-e22', players: 'N/A', wait: 'N/A' },
+        { job_id: 'ac60014b-c24', players: 'N/A', wait: 'N/A' },
+        { job_id: '19d7983-00b', players: '4', wait: '0s' }
+      ];
+      
+      serversContainer.innerHTML = mockServers.map(server => `
+        <div class="server-item">
+          <div class="server-info">
+            <div class="server-job">Job: ${server.job_id}..</div>
+            <div>
+              <span class="server-players">Players: ${server.players}</span>
+              ${server.wait !== 'N/A' ? `<span class="server-wait"> | Wait: ${server.wait}</span>` : ''}
+            </div>
+          </div>
+          <div class="server-actions">
+            <button class="copy-btn" onclick="copyJobId('${server.job_id}')">
+              <i class="fas fa-copy"></i> Copy
+            </button>
+          </div>
+        </div>
+      `).join('');
+    } else {
+      serversContainer.innerHTML = activeServers.map(server => `
+        <div class="server-item">
+          <div class="server-info">
+            <div class="server-job">Job: ${server.job_id}..</div>
+            <div>
+              <span class="server-players">Players: ${server.players}</span>
+              <span class="server-wait"> | Event: ${server.last_event}</span>
+            </div>
+          </div>
+          <div class="server-actions">
+            <button class="copy-btn" onclick="copyJobId('${server.job_id}')">
+              <i class="fas fa-copy"></i> Copy
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+  }
+
+  // Hàm copy Job ID
+  function copyJobId(jobId) {
+    navigator.clipboard.writeText(jobId).then(() => {
+      alert(`Đã copy Job ID: ${jobId}`);
+    }).catch(err => {
+      console.error('Lỗi copy: ', err);
+    });
   }
 
   window.addEventListener('load', () => {
@@ -660,6 +817,32 @@
           `;
           break;
 
+        case 'servers':
+          content = `
+            <h1><i class="fas fa-server"></i> Active Servers</h1>
+            <p>Danh sách các server đang có sự kiện Blox Fruits</p>
+            
+            <div class="card">
+              <h3><i class="fas fa-list"></i> Server List</h3>
+              <div class="server-list" id="serversList">
+                <p>Đang tải danh sách server...</p>
+              </div>
+              <div style="display: flex; gap: 10px; margin-top: 15px;">
+                <button onclick="loadServers()" class="btn btn-primary">
+                  <i class="fas fa-sync-alt"></i> Refresh Servers
+                </button>
+              </div>
+            </div>
+
+            <div class="card">
+              <h3><i class="fas fa-info-circle"></i> Hướng dẫn</h3>
+              <p>• Click "Copy" để copy Job ID của server</p>
+              <p>• Sử dụng Job ID để join server thông qua script</p>
+              <p>• Players: Hiển thị số người chơi hiện tại trong server</p>
+            </div>
+          `;
+          break;
+
         case 'script':
           content = `
             <h1><i class="fas fa-code"></i> Script Auto Farm</h1>
@@ -773,11 +956,15 @@
         });
       }
 
-      // Load events nếu đang ở trang events
+      // Load data nếu đang ở trang tương ứng
       if (page === 'events') {
         setTimeout(() => {
           loadEvents();
           updateEventsLog();
+        }, 100);
+      } else if (page === 'servers') {
+        setTimeout(() => {
+          loadServers();
         }, 100);
       }
 
@@ -808,11 +995,13 @@
     showPage('home');
   });
 
-  // Tự động refresh events mỗi 30 giây nếu đang ở trang events
+  // Tự động refresh data mỗi 30 giây
   setInterval(() => {
     const currentPage = localStorage.getItem("currentPage") || "home";
     if (currentPage === 'events') {
       loadEvents();
+    } else if (currentPage === 'servers') {
+      loadServers();
     }
   }, 30000);
 </script>
