@@ -1,6 +1,4 @@
-// api/events.js
-let eventsDatabase = [];
-
+// api/events.js - Đặt trong folder /api/
 export default function handler(req, res) {
   // Cho phép CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -9,6 +7,11 @@ export default function handler(req, res) {
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
+  }
+
+  // Biến lưu trữ tạm thời
+  if (!global.eventsDatabase) {
+    global.eventsDatabase = [];
   }
 
   if (req.method === 'POST') {
@@ -23,12 +26,11 @@ export default function handler(req, res) {
         server_time: new Date().toLocaleString('vi-VN')
       };
 
-      // Lưu vào database
-      eventsDatabase.push(eventWithMetadata);
+      global.eventsDatabase.push(eventWithMetadata);
       
       // Giữ tối đa 50 events
-      if (eventsDatabase.length > 50) {
-        eventsDatabase = eventsDatabase.slice(-50);
+      if (global.eventsDatabase.length > 50) {
+        global.eventsDatabase = global.eventsDatabase.slice(-50);
       }
 
       res.status(200).json({ 
@@ -45,8 +47,8 @@ export default function handler(req, res) {
   else if (req.method === 'GET') {
     res.status(200).json({
       success: true,
-      events: eventsDatabase.reverse(), // Mới nhất lên đầu
-      total: eventsDatabase.length,
+      events: global.eventsDatabase.reverse() || [],
+      total: global.eventsDatabase?.length || 0,
       last_updated: new Date().toISOString()
     });
   }
