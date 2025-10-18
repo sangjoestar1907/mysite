@@ -36,6 +36,40 @@
       line-height: 1.6;
     }
 
+    /* Header */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 15px 0;
+      background: rgba(0, 0, 0, 0.9);
+      backdrop-filter: blur(10px);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+      cursor: pointer;
+      color: var(--text-color);
+      padding: 8px 16px;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: linear-gradient(45deg, var(--secondary-color), var(--primary-color));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .logo:hover {
+      transform: scale(1.05);
+    }
+
+    /* Main Content */
     .container {
       max-width: 1200px;
       margin: 40px auto;
@@ -46,12 +80,19 @@
       border: 1px solid var(--border-color);
     }
 
+    /* Cards */
     .card {
       background: var(--card-bg);
       border-radius: 12px;
       padding: 24px;
       margin: 20px 0;
       border: 1px solid var(--border-color);
+      transition: all 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     }
 
     .card h3 {
@@ -62,6 +103,7 @@
       gap: 10px;
     }
 
+    /* Event Dropdown */
     .event-dropdown {
       margin: 20px 0;
     }
@@ -193,29 +235,111 @@
       transform: translateY(-2px);
       box-shadow: 0 8px 20px rgba(254, 202, 87, 0.3);
     }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 30px;
+      margin-top: 50px;
+      border-top: 1px solid var(--border-color);
+      background: rgba(0, 0, 0, 0.8);
+    }
+
+    /* Loading */
+    .loading {
+      text-align: center;
+      padding: 20px;
+      color: var(--text-muted);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .container {
+        margin: 20px;
+        padding: 20px;
+      }
+      
+      .event-server-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+      
+      .server-actions {
+        align-self: flex-end;
+      }
+    }
   </style>
 </head>
 <body>
+  <header>
+    <div class="logo">
+      <i class="fas fa-cube"></i>
+      Saki Hub - Blox Fruits Event Tracker
+    </div>
+  </header>
+
   <div class="container">
     <h1><i class="fas fa-server"></i> Active Servers - Blox Fruits</h1>
-    <p>Danh sách các server đang có sự kiện Blox Fruits</p>
+    <p>Danh sách các server đang có sự kiện Blox Fruits - Real Time</p>
     
     <div class="card">
       <h3><i class="fas fa-list"></i> Server List theo Sự Kiện</h3>
       <div id="eventDropdowns">
-        <div class="event-server-item">
-          <div class="event-server-info">
-            <div class="event-server-job">🔄 Đang tải dữ liệu...</div>
-          </div>
+        <div class="loading">
+          <i class="fas fa-sync-alt fa-spin"></i>
+          <div>Đang tải dữ liệu từ API...</div>
         </div>
       </div>
       <div style="display: flex; gap: 10px; margin-top: 15px;">
         <button onclick="loadAllEventServers()" class="btn">
           <i class="fas fa-sync-alt"></i> Refresh All Servers
         </button>
+        <button onclick="showAPIDocumentation()" class="btn" style="background: #666;">
+          <i class="fas fa-code"></i> API Docs
+        </button>
       </div>
     </div>
+
+    <div class="card">
+      <h3><i class="fas fa-info-circle"></i> Hướng dẫn sử dụng</h3>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-top: 15px;">
+        <div>
+          <h4><i class="fas fa-mouse-pointer"></i> Cách sử dụng</h4>
+          <p>• Click vào tên sự kiện để mở/rút gọn danh sách server</p>
+          <p>• Click "Copy" để copy Job ID của server</p>
+          <p>• Sử dụng Job ID để join server</p>
+        </div>
+        <div>
+          <h4><i class="fas fa-rocket"></i> Thông tin server</h4>
+          <p>• <span style="color: var(--primary-color)">Job ID</span>: Mã server</p>
+          <p>• <span style="color: var(--success-color)">Players</span>: Số người chơi hiện tại</p>
+          <p>• <span style="color: var(--secondary-color)">Wait</span>: Thời gian chờ</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><i class="fas fa-plug"></i> Trạng thái hệ thống</h3>
+      <p><strong>API Base URL:</strong> <code>https://saki-hub.vercel.app/api</code></p>
+      <p><strong>Endpoints hoạt động:</strong></p>
+      <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px;">
+        <span style="background: var(--success-color); padding: 4px 8px; border-radius: 4px; font-size: 12px;">/fullmoon</span>
+        <span style="background: var(--success-color); padding: 4px 8px; border-radius: 4px; font-size: 12px;">/nearfullmoon</span>
+        <span style="background: var(--success-color); padding: 4px 8px; border-radius: 4px; font-size: 12px;">/ripindra</span>
+        <span style="background: var(--success-color); padding: 4px 8px; border-radius: 4px; font-size: 12px;">/doughking</span>
+        <span style="background: var(--success-color); padding: 4px 8px; border-radius: 4px; font-size: 12px;">/darkbeard</span>
+        <span style="background: var(--success-color); padding: 4px 8px; border-radius: 4px; font-size: 12px;">/cursedcaptain</span>
+        <span style="background: var(--success-color); padding: 4px 8px; border-radius: 4px; font-size: 12px;">/mysticisland</span>
+      </div>
+      <p style="margin-top: 10px;"><strong>📢 CHẾ ĐỘ DATA THẬT</strong> - Hiển thị dữ liệu trực tiếp từ Roblox</p>
+    </div>
   </div>
+
+  <footer>
+    <p>&copy; 2024 Saki Hub. All rights reserved.</p>
+    <p>Blox Fruits Event Tracking System - Real Time Data</p>
+  </footer>
 
   <script>
     const API_BASE_URL = 'https://saki-hub.vercel.app/api';
@@ -224,37 +348,44 @@
       { 
         name: "Full Moon", 
         icon: "fas fa-moon",
-        endpoint: "/fullmoon"
+        endpoint: "/fullmoon",
+        color: "#4CAF50"
       },
       { 
         name: "Near Full Moon", 
         icon: "fas fa-moon",
-        endpoint: "/nearfullmoon"
+        endpoint: "/nearfullmoon",
+        color: "#FF9800"
       },
       { 
         name: "Mystic Island", 
         icon: "fas fa-mountain",
-        endpoint: "/mysticisland"
+        endpoint: "/mysticisland",
+        color: "#2196F3"
       },
       { 
         name: "Rip Indra", 
         icon: "fas fa-skull",
-        endpoint: "/ripindra"
+        endpoint: "/ripindra",
+        color: "#F44336"
       },
       { 
         name: "Dough King", 
         icon: "fas fa-crown",
-        endpoint: "/doughking"
+        endpoint: "/doughking",
+        color: "#9C27B0"
       },
       { 
         name: "Darkbeard", 
         icon: "fas fa-skull-crossbones",
-        endpoint: "/darkbeard"
+        endpoint: "/darkbeard",
+        color: "#607D8B"
       },
       { 
         name: "Cursed Captain", 
         icon: "fas fa-ghost",
-        endpoint: "/cursedcaptain"
+        endpoint: "/cursedcaptain",
+        color: "#795548"
       }
     ];
 
@@ -263,14 +394,14 @@
       const dropdownsContainer = document.getElementById('eventDropdowns');
       
       dropdownsContainer.innerHTML = `
-        <div class="event-server-item">
-          <div class="event-server-info">
-            <div class="event-server-job">🔄 Đang tải dữ liệu từ các API...</div>
-          </div>
+        <div class="loading">
+          <i class="fas fa-sync-alt fa-spin"></i>
+          <div>Đang tải dữ liệu từ các API...</div>
         </div>
       `;
 
       let allServers = [];
+      let loadedCount = 0;
 
       // Gọi tất cả API endpoints
       for (const event of eventsList) {
@@ -282,11 +413,18 @@
             allServers = allServers.concat(result.servers.map(server => ({
               ...server,
               event_type: event.name,
-              event_icon: event.icon
+              event_icon: event.icon,
+              event_color: event.color
             })));
+            loadedCount++;
+            
+            // Cập nhật loading progress
+            updateLoadingProgress(loadedCount, eventsList.length);
           }
         } catch (error) {
           console.error(`Lỗi khi tải ${event.name}:`, error);
+          loadedCount++;
+          updateLoadingProgress(loadedCount, eventsList.length);
         }
       }
 
@@ -305,6 +443,20 @@
         const groupedServers = groupServersByEvent(allServers);
         displayEventDropdowns(groupedServers);
       }
+    }
+
+    // Cập nhật tiến trình loading
+    function updateLoadingProgress(current, total) {
+      const dropdownsContainer = document.getElementById('eventDropdowns');
+      const progress = Math.round((current / total) * 100);
+      
+      dropdownsContainer.innerHTML = `
+        <div class="loading">
+          <i class="fas fa-sync-alt fa-spin"></i>
+          <div>Đang tải dữ liệu... ${progress}%</div>
+          <div style="font-size: 12px; margin-top: 5px;">${current}/${total} API endpoints loaded</div>
+        </div>
+      `;
     }
 
     // Nhóm server theo sự kiện
@@ -329,6 +481,18 @@
     function displayEventDropdowns(groupedServers) {
       const dropdownsContainer = document.getElementById('eventDropdowns');
       
+      if (Object.keys(groupedServers).length === 0) {
+        dropdownsContainer.innerHTML = `
+          <div class="event-server-item">
+            <div class="event-server-info">
+              <div class="event-server-job">📭 Không có server nào đang có sự kiện</div>
+              <div class="event-server-players">Chạy script Roblox để thấy servers thật</div>
+            </div>
+          </div>
+        `;
+        return;
+      }
+      
       dropdownsContainer.innerHTML = Object.entries(groupedServers).map(([eventName, data]) => {
         const event = data.event;
         const servers = data.servers;
@@ -337,7 +501,7 @@
           <div class="event-dropdown">
             <div class="event-dropdown-header" onclick="toggleDropdown(this)">
               <div class="event-dropdown-title">
-                <i class="${event.icon}"></i>
+                <i class="${event.icon}" style="color: ${event.color}"></i>
                 ${eventName}
               </div>
               <div class="event-dropdown-count">${servers.length} server(s)</div>
@@ -347,7 +511,7 @@
                 ${servers.map(server => `
                   <div class="event-server-item">
                     <div class="event-server-info">
-                      <div class="event-server-job">Job: ${server.job_id}</div>
+                      <div class="event-server-job">Job: ${formatJobId(server.job_id)}</div>
                       <div>
                         <span class="event-server-players">Players: ${server.players}</span>
                         ${server.wait ? `<span class="event-server-wait"> | Wait: ${server.wait}</span>` : ''}
@@ -365,6 +529,13 @@
           </div>
         `;
       }).join('');
+    }
+
+    // Format Job ID để hiển thị đẹp
+    function formatJobId(jobId) {
+      if (!jobId) return 'N/A';
+      if (jobId.length <= 20) return jobId;
+      return jobId.substring(0, 15) + '..';
     }
 
     // Toggle dropdown
@@ -388,15 +559,101 @@
     // Hàm copy Job ID
     function copyJobId(jobId) {
       navigator.clipboard.writeText(jobId).then(() => {
-        alert(`Đã copy Job ID: ${jobId}`);
+        showNotification(`Đã copy Job ID: ${formatJobId(jobId)}`);
+      }).catch(err => {
+        showNotification('Lỗi copy: ' + err, 'error');
       });
     }
+
+    // Hiển thị notification
+    function showNotification(message, type = 'success') {
+      const notification = document.createElement('div');
+      notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: ${type === 'error' ? 'var(--error-color)' : 'var(--success-color)'};
+        color: white;
+        padding: 12px 20px;
+        border-radius: 8px;
+        z-index: 10000;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        animation: slideIn 0.3s ease;
+      `;
+      notification.innerHTML = `
+        <i class="fas fa-${type === 'error' ? 'exclamation-triangle' : 'check'}"></i>
+        ${message}
+      `;
+      
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => {
+          document.body.removeChild(notification);
+        }, 300);
+      }, 3000);
+    }
+
+    // Hiển thị API Documentation
+    function showAPIDocumentation() {
+      const docsWindow = window.open('', '_blank');
+      docsWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>Saki Hub API Documentation</title>
+          <style>
+            body { font-family: Arial, sans-serif; margin: 20px; background: #1a1a2e; color: white; }
+            .api-endpoint { background: #2d2d44; padding: 15px; margin: 10px 0; border-radius: 8px; border-left: 4px solid #feca57; }
+            .method { background: #feca57; color: black; padding: 2px 8px; border-radius: 4px; font-weight: bold; }
+            .url { color: #ff6b6b; font-family: monospace; }
+          </style>
+        </head>
+        <body>
+          <h1>📡 Saki Hub API Documentation</h1>
+          ${eventsList.map(event => `
+            <div class="api-endpoint">
+              <span class="method">GET</span>
+              <span class="url">/api${event.endpoint}</span>
+              <p>Lấy danh sách server có ${event.name}</p>
+              <a href="${API_BASE_URL}${event.endpoint}" target="_blank" style="color: #feca57;">Test API →</a>
+            </div>
+          `).join('')}
+        </body>
+        </html>
+      `);
+      docsWindow.document.close();
+    }
+
+    // Thêm CSS animation
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes slideIn {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+      }
+      @keyframes slideOut {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(100%); opacity: 0; }
+      }
+      .fa-spin {
+        animation: fa-spin 1s infinite linear;
+      }
+      @keyframes fa-spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    `;
+    document.head.appendChild(style);
 
     // Tải dữ liệu khi trang load
     document.addEventListener('DOMContentLoaded', loadAllEventServers);
 
     // Tự động refresh mỗi 30 giây
     setInterval(loadAllEventServers, 30000);
+
+    console.log("🚀 Saki Hub - Blox Fruits Event Tracker đã khởi động!");
   </script>
 </body>
 </html>
