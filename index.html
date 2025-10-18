@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Saki Hub - Blox Fruits Event Tracker</title>
+  <title>Saki Hub - Blox Fruits Event Track</title>
 
   <link rel="icon" type="image/png" href="logo.png">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -287,6 +287,35 @@
       background: #f44336;
     }
 
+    /* Event Log */
+    .event-log {
+      max-height: 400px;
+      overflow-y: auto;
+      margin: 15px 0;
+    }
+
+    .event-item {
+      background: rgba(255, 255, 255, 0.03);
+      border-left: 4px solid #feca57;
+      padding: 12px 15px;
+      margin: 8px 0;
+      border-radius: 0 8px 8px 0;
+    }
+
+    .event-item.success {
+      border-left-color: #4CAF50;
+    }
+
+    .event-item.error {
+      border-left-color: #f44336;
+    }
+
+    .event-time {
+      font-size: 12px;
+      color: #888;
+      margin-top: 5px;
+    }
+
     /* Footer */
     footer {
       text-align: center;
@@ -373,6 +402,10 @@
   const mainContent = document.getElementById('mainContent');
   const logo = document.getElementById('logo');
 
+  // API Configuration
+  const API_BASE_URL = 'https://saki-hub.vercel.app/api';
+  let eventsLog = [];
+
   // Danh sách sự kiện Blox Fruits
   const eventsList = [
     { name: "Full Moon", world: "World 3", active: true, color: "#4CAF50" },
@@ -383,6 +416,111 @@
     { name: "Darkbeard", world: "World 2", active: true, color: "#607D8B" },
     { name: "Cursed Captain", world: "World 2", active: false, color: "#795548" }
   ];
+
+  // Hàm gọi API
+  async function callAPI(endpoint, method = 'GET', data = null) {
+    try {
+      const options = {
+        method: method,
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      };
+
+      if (data && (method === 'POST' || method === 'PUT')) {
+        options.body = JSON.stringify(data);
+      }
+
+      const response = await fetch(`${API_BASE_URL}${endpoint}`, options);
+      const result = await response.json();
+      
+      // Thêm vào log
+      addToLog(`${method} ${endpoint}`, result.success ? 'success' : 'error', result);
+      
+      return result;
+    } catch (error) {
+      console.error('API Error:', error);
+      addToLog(`${method} ${endpoint}`, 'error', { error: error.message });
+      return { success: false, error: error.message };
+    }
+  }
+
+  // Hàm thêm vào log
+  function addToLog(action, type, data) {
+    const logItem = {
+      id: Date.now(),
+      action,
+      type,
+      data,
+      timestamp: new Date().toLocaleString('vi-VN')
+    };
+    
+    eventsLog.unshift(logItem); // Thêm vào đầu mảng
+    if (eventsLog.length > 50) eventsLog = eventsLog.slice(0, 50); // Giới hạn 50 items
+    
+    // Cập nhật UI nếu đang ở trang events
+    if (document.getElementById('eventsLog')) {
+      updateEventsLog();
+    }
+  }
+
+  // Hàm cập nhật log UI
+  function updateEventsLog() {
+    const logContainer = document.getElementById('eventsLog');
+    if (!logContainer) return;
+
+    logContainer.innerHTML = eventsLog.map(item => `
+      <div class="event-item ${item.type}">
+        <div><strong>${item.action}</strong> - ${item.type === 'success' ? '✅' : '❌'}</div>
+        <div>${JSON.stringify(item.data)}</div>
+        <div class="event-time">${item.timestamp}</div>
+      </div>
+    `).join('');
+  }
+
+  // Hàm test API
+  async function testAPI() {
+    const testData = {
+      event_type: "test_event",
+      boss_name: "Test Boss",
+      players: "5/10",
+      job_id: "test_" + Date.now(),
+      world: "World3",
+      timestamp: new Date().toISOString()
+    };
+
+    const result = await callAPI('/events', 'POST', testData);
+    
+    if (result.success) {
+      alert('✅ Test API thành công!');
+      loadEvents(); // Load lại events
+    } else {
+      alert('❌ Test API thất bại: ' + (result.error || 'Unknown error'));
+    }
+  }
+
+  // Hàm load events từ API
+  async function loadEvents() {
+    const result = await callAPI('/events', 'GET');
+    
+    if (result.success && result.events) {
+      const eventsContainer = document.getElementById('realTimeEvents');
+      if (eventsContainer) {
+        if (result.events.length === 0) {
+          eventsContainer.innerHTML = '<p>Chưa có event nào được ghi nhận</p>';
+        } else {
+          eventsContainer.innerHTML = result.events.map(event => `
+            <div class="event-item success">
+              <div><strong>${event.boss_name || event.event_type}</strong></div>
+              <div>Server: ${event.job_id || 'N/A'} | Players: ${event.players || 'N/A'}</div>
+              <div>World: ${event.world || 'N/A'} | Time: ${event.time_of_day || 'N/A'}</div>
+              <div class="event-time">${new Date(event.received_at).toLocaleString('vi-VN')}</div>
+            </div>
+          `).join('');
+        }
+      }
+    }
+  }
 
   window.addEventListener('load', () => {
     setTimeout(() => {
@@ -460,13 +598,43 @@
                 </div>
               `).join('')}
             </div>
+
+            <div class="card">
+              <h3><i class="fas fa-plug"></i> Trạng thái hệ thống</h3>
+              <p>API Base URL: <code>${API_BASE_URL}</code></p>
+              <button onclick="testAPI()" class="btn btn-primary">
+                <i class="fas fa-test"></i> Test API Connection
+              </button>
+            </div>
           `;
           break;
 
         case 'events':
           content = `
-            <h1><i class="fas fa-calendar-alt"></i> Sự Kiện Blox Fruits</h1>
+            <h1><i class="fas fa-calendar-alt"></i> Sự Kiện Blox Fruits - REAL TIME</h1>
             <p>Theo dõi tất cả sự kiện trong game theo thời gian thực</p>
+            
+            <div class="card">
+              <h3><i class="fas fa-database"></i> Events từ Roblox</h3>
+              <div class="event-log" id="realTimeEvents">
+                <p>Đang tải dữ liệu...</p>
+              </div>
+              <div style="display: flex; gap: 10px; margin-top: 15px;">
+                <button onclick="loadEvents()" class="btn btn-primary">
+                  <i class="fas fa-sync-alt"></i> Refresh Events
+                </button>
+                <button onclick="testAPI()" class="btn" style="background: #666;">
+                  <i class="fas fa-test"></i> Test API
+                </button>
+              </div>
+            </div>
+
+            <div class="card">
+              <h3><i class="fas fa-terminal"></i> API Log</h3>
+              <div class="event-log" id="eventsLog">
+                <p>Chưa có activity nào</p>
+              </div>
+            </div>
             
             <div class="features-grid">
               ${eventsList.map(event => `
@@ -515,6 +683,13 @@
                 <li>An toàn và ổn định</li>
               </ul>
             </div>
+
+            <div class="card">
+              <h3><i class="fas fa-api"></i> API Integration</h3>
+              <p>Script Roblox sẽ gửi dữ liệu lên API endpoint:</p>
+              <code>${API_BASE_URL}/events</code>
+              <p style="margin-top: 10px;">Method: POST</p>
+            </div>
           `;
           break;
 
@@ -551,26 +726,38 @@
             <p>Tích hợp hệ thống thông báo sự kiện vào website của bạn</p>
             
             <div class="card">
-              <h3><i class="fas fa-code"></i> Endpoints</h3>
-              <p><strong>Base URL:</strong> <code>https://api.sakihub.com/v1</code></p>
+              <h3><i class="fas fa-code"></i> Base URL</h3>
+              <p><code>${API_BASE_URL}</code></p>
               
               <div style="margin-top: 20px;">
-                <h4><i class="fas fa-moon"></i> Sự Kiện Moon</h4>
-                <code>POST /events/moon</code>
-                <p>Theo dõi trạng thái mặt trăng trong game</p>
+                <h4><i class="fas fa-paper-plane"></i> Gửi sự kiện</h4>
+                <p><strong>Endpoint:</strong> <code>POST /events</code></p>
+                <p><strong>Body:</strong></p>
+                <pre style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; overflow-x: auto;">
+{
+  "event_type": "full_moon",
+  "boss_name": "Full Moon",
+  "players": "10/12",
+  "job_id": "server_job_id_here",
+  "world": "World3",
+  "time_of_day": "13:45:00",
+  "timestamp": "2024-01-01T12:00:00Z"
+}</pre>
               </div>
 
               <div style="margin-top: 20px;">
-                <h4><i class="fas fa-skull"></i> Sự Kiện Boss</h4>
-                <code>POST /events/boss</code>
-                <p>Thông báo khi boss xuất hiện</p>
+                <h4><i class="fas fa-download"></i> Lấy danh sách sự kiện</h4>
+                <p><strong>Endpoint:</strong> <code>GET /events</code></p>
+                <p>Trả về danh sách tất cả sự kiện đã nhận</p>
               </div>
             </div>
 
             <div class="card">
-              <h3><i class="fas fa-key"></i> Authentication</h3>
-              <p>Sử dụng API Key để xác thực requests</p>
-              <code>Authorization: Bearer your_api_key_here</code>
+              <h3><i class="fas fa-key"></i> Test API</h3>
+              <p>Kiểm tra kết nối API của bạn</p>
+              <button onclick="testAPI()" class="btn btn-primary">
+                <i class="fas fa-test"></i> Test API Connection
+              </button>
             </div>
           `;
           break;
@@ -584,6 +771,14 @@
         discordBtn.addEventListener("click", () => {
           window.open("https://discord.gg/YSfqv7ee", "_blank");
         });
+      }
+
+      // Load events nếu đang ở trang events
+      if (page === 'events') {
+        setTimeout(() => {
+          loadEvents();
+          updateEventsLog();
+        }, 100);
       }
 
       overlay.classList.add('hide');
@@ -613,19 +808,13 @@
     showPage('home');
   });
 
-  // Simulate real-time updates
+  // Tự động refresh events mỗi 30 giây nếu đang ở trang events
   setInterval(() => {
-    // Randomly toggle event status for demo
-    if (Math.random() > 0.7) {
-      const randomEvent = eventsList[Math.floor(Math.random() * eventsList.length)];
-      randomEvent.active = !randomEvent.active;
-      
-      const currentPage = localStorage.getItem("currentPage") || "home";
-      if (currentPage === 'home' || currentPage === 'events') {
-        showPage(currentPage);
-      }
+    const currentPage = localStorage.getItem("currentPage") || "home";
+    if (currentPage === 'events') {
+      loadEvents();
     }
-  }, 10000);
+  }, 30000);
 </script>
 
 </body>
