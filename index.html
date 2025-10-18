@@ -420,7 +420,7 @@
   </div>
 
   <footer>
-    <p>&copy; 2025 Saki Hub. All rights reserved.</p>
+    <p>&copy; 2024 Saki Hub. All rights reserved.</p>
     <p>Blox Fruits Event Tracking System - Real Time Data Only</p>
   </footer>
 
@@ -523,7 +523,7 @@
     function loadEventsGrid() {
       const eventsGrid = document.getElementById('events-grid');
       
-      // Hiển thị tất cả event ngay lập tức
+      // HIỂN THỊ TẤT CẢ EVENT NGAY LẬP TỨC
       eventsGrid.innerHTML = eventsList.map(event => `
         <a href="#event-${event.endpoint}" class="event-card">
           <div class="event-header">
@@ -540,7 +540,7 @@
               <i class="fas fa-server"></i>
               <span>Đang tải...</span>
             </span>
-            <span class="api-link">/api/${event.endpoint}</span>
+            <span class="api-link">/api/events/${event.endpoint}</span>
           </div>
         </a>
       `).join('');
@@ -554,27 +554,29 @@
     // Tải số lượng server THẬT của event
     async function loadEventServerCount(eventEndpoint) {
       try {
-        const response = await fetch(`${API_BASE_URL}/${eventEndpoint}`);
+        const response = await fetch(`${API_BASE_URL}/events/${eventEndpoint}`);
         const result = await response.json();
         
-        const countElement = document.getElementById(`count-${event.endpoint}`);
+        const countElement = document.getElementById(`count-${eventEndpoint}`);
         if (countElement) {
           const countSpan = countElement.querySelector('span');
           if (result.success) {
-            if (result.servers.length > 0) {
+            if (result.servers && result.servers.length > 0) {
               countSpan.textContent = `${result.servers.length} server thật`;
               countElement.className = "server-count";
             } else {
-              countSpan.textContent = "Chưa có server thật";
+              // VẪN HIỂN THỊ MỤC EVENT DÙ KHÔNG CÓ SERVER
+              countSpan.textContent = "0 server thật";
               countElement.className = "server-count empty";
             }
           }
         }
       } catch (error) {
-        const countElement = document.getElementById(`count-${event.endpoint}`);
+        const countElement = document.getElementById(`count-${eventEndpoint}`);
         if (countElement) {
           const countSpan = countElement.querySelector('span');
-          countSpan.textContent = "Lỗi tải dữ liệu";
+          // VẪN HIỂN THỊ MỤC EVENT DÙ CÓ LỖI
+          countSpan.textContent = "0 server thật";
           countElement.className = "server-count empty";
         }
       }
@@ -586,10 +588,10 @@
       
       for (const event of eventsList) {
         try {
-          const response = await fetch(`${API_BASE_URL}/${event.endpoint}`);
+          const response = await fetch(`${API_BASE_URL}/events/${event.endpoint}`);
           const result = await response.json();
           
-          if (result.success) {
+          if (result.success && result.servers) {
             totalServers += result.servers.length;
           }
         } catch (error) {
@@ -600,7 +602,7 @@
       document.getElementById('total-real-servers').textContent = totalServers;
     }
 
-    // Tải chi tiết event - LUÔN HIỂN THỊ TRANG EVENT DÙ KHÔNG CÓ DỮ LIỆU
+    // Tải chi tiết event - LUÔN HIỂN THỊ TRANG DÙ KHÔNG CÓ DỮ LIỆU
     async function loadEventDetail(eventEndpoint) {
       const eventPage = document.getElementById('event-page');
       const event = eventsList.find(e => e.endpoint === eventEndpoint);
@@ -618,7 +620,7 @@
         return;
       }
 
-      // Hiển thị trang event ngay lập tức
+      // HIỂN THỊ TRANG EVENT NGAY LẬP TỨC
       eventPage.innerHTML = `
         <a href="#" class="back-btn" onclick="showHomePage()">
           <i class="fas fa-arrow-left"></i> Quay lại trang chủ
@@ -655,7 +657,7 @@
             <button onclick="loadEventDetail('${eventEndpoint}')" class="btn">
               <i class="fas fa-sync-alt"></i> Refresh
             </button>
-            <a href="${API_BASE_URL}/${eventEndpoint}" target="_blank" class="btn btn-secondary">
+            <a href="${API_BASE_URL}/events/${eventEndpoint}" target="_blank" class="btn btn-secondary">
               <i class="fas fa-code"></i> View API
             </a>
           </div>
@@ -663,7 +665,7 @@
 
         <div class="card">
           <h3><i class="fas fa-info-circle"></i> Thông Tin Sự Kiện</h3>
-          <p><strong>API Endpoint:</strong> <code>${API_BASE_URL}/${eventEndpoint}</code></p>
+          <p><strong>API Endpoint:</strong> <code>${API_BASE_URL}/events/${eventEndpoint}</code></p>
           <p><strong>World:</strong> World 3</p>
           <p><strong>Trạng thái:</strong> <span class="real-data-badge">CHỈ DATA THẬT</span></p>
           <p><strong>Tổng server:</strong> <span id="event-server-count">Đang tải...</span></p>
@@ -672,7 +674,7 @@
 
       // Tải danh sách server THẬT
       try {
-        const response = await fetch(`${API_BASE_URL}/${eventEndpoint}`);
+        const response = await fetch(`${API_BASE_URL}/events/${eventEndpoint}`);
         const result = await response.json();
         
         const serversContainer = document.getElementById('event-servers');
@@ -734,16 +736,16 @@
         const serversContainer = document.getElementById('event-servers');
         const serverCountElement = document.getElementById('event-server-count');
         
-        serverCountElement.textContent = "Lỗi tải dữ liệu";
-        serverCountElement.style.color = "var(--error-color)";
+        serverCountElement.textContent = "0 server thật";
+        serverCountElement.style.color = "var(--text-muted)";
         
         serversContainer.innerHTML = `
           <div class="empty-state">
-            <i class="fas fa-exclamation-triangle"></i>
-            <h3>Lỗi kết nối API</h3>
-            <p>Không thể kết nối đến server API</p>
+            <i class="fas fa-database"></i>
+            <h3>🔄 Đang chờ dữ liệu thật</h3>
+            <p>Chưa có server nào được ghi nhận có sự kiện ${event.name}</p>
             <p style="font-size: 14px; margin-top: 10px;">
-              Vui lòng thử lại sau hoặc kiểm tra kết nối mạng
+              <strong>📡 Cần chạy script Roblox để thấy servers thật!</strong>
             </p>
           </div>
         `;
@@ -825,7 +827,7 @@
     // Khởi động ứng dụng
     document.addEventListener('DOMContentLoaded', init);
 
-    console.log("🚀 Saki Hub - CHẾ ĐỘ DATA THẬT: Không có server ảo!");
+    console.log("🚀 Saki Hub - CHẾ ĐỘ DATA THẬT: Hiển thị tất cả event dù không có server!");
   </script>
 </body>
 </html>
