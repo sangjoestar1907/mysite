@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -443,8 +442,8 @@
       color: #888;
     }
 
-    /* Event Servers Panel */
-    .event-servers-panel {
+    /* Event API Panel */
+    .event-api-panel {
       margin-top: 20px;
       background: rgba(255, 255, 255, 0.03);
       border-radius: 8px;
@@ -453,7 +452,7 @@
       display: none;
     }
 
-    .event-servers-panel.show {
+    .event-api-panel.show {
       display: block;
       animation: fadeIn 0.3s ease;
     }
@@ -463,7 +462,7 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    .event-servers-header {
+    .event-api-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -472,12 +471,12 @@
       border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
 
-    .event-servers-title {
+    .event-api-title {
       color: #feca57;
       font-size: 18px;
     }
 
-    .close-servers {
+    .close-api {
       background: none;
       border: none;
       color: #fff;
@@ -488,14 +487,67 @@
       transition: all 0.3s ease;
     }
 
-    .close-servers:hover {
+    .close-api:hover {
       background: rgba(255, 255, 255, 0.1);
     }
 
-    .no-servers {
-      text-align: center;
-      padding: 30px;
-      color: #888;
+    .api-url {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 15px;
+      margin: 15px 0;
+      font-family: 'Courier New', monospace;
+      word-break: break-all;
+      display: flex;
+      justify-content: between;
+      align-items: center;
+    }
+
+    .api-url code {
+      color: #feca57;
+      flex: 1;
+    }
+
+    .copy-api-btn {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-left: 10px;
+      transition: all 0.3s ease;
+    }
+
+    .copy-api-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .api-description {
+      margin-top: 15px;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 8px;
+    }
+
+    .api-method {
+      display: inline-block;
+      background: #4CAF50;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: bold;
+      margin-right: 10px;
+    }
+
+    .api-method.get {
+      background: #2196F3;
+    }
+
+    .api-method.post {
+      background: #FF9800;
     }
 
     /* Footer */
@@ -527,6 +579,16 @@
       
       .server-actions {
         align-self: flex-end;
+      }
+      
+      .api-url {
+        flex-direction: column;
+        gap: 10px;
+      }
+      
+      .copy-api-btn {
+        margin-left: 0;
+        width: 100%;
       }
     }
   </style>
@@ -602,15 +664,64 @@
   // Database thật - CHỈ LƯU DATA THẬT
   let eventsDatabase = [];
 
-  // Danh sách sự kiện Blox Fruits (chỉ mô tả)
+  // Danh sách sự kiện Blox Fruits với API endpoints
   const eventsList = [
-    { name: "Full Moon", world: "World 3", active: false, color: "#4CAF50" },
-    { name: "Near Full Moon", world: "World 3", active: false, color: "#FF9800" },
-    { name: "Mystic Island", world: "World 3", active: false, color: "#2196F3" },
-    { name: "Rip Indra True Form", world: "World 3", active: false, color: "#F44336" },
-    { name: "Dough King", world: "World 3", active: false, color: "#9C27B0" },
-    { name: "Darkbeard", world: "World 2", active: false, color: "#607D8B" },
-    { name: "Cursed Captain", world: "World 2", active: false, color: "#795548" }
+    { 
+      name: "Full Moon", 
+      world: "World 3", 
+      active: false, 
+      color: "#4CAF50",
+      api_endpoint: "full-moon",
+      description: "Sự kiện Full Moon xuất hiện khi trăng tròn, cho phép người chơi biến thành sói và nhận các buff đặc biệt."
+    },
+    { 
+      name: "Near Full Moon", 
+      world: "World 3", 
+      active: false, 
+      color: "#FF9800",
+      api_endpoint: "near-full-moon",
+      description: "Sự kiện Near Full Moon xuất hiện khi trăng gần tròn, chuẩn bị cho sự kiện Full Moon sắp tới."
+    },
+    { 
+      name: "Mystic Island", 
+      world: "World 3", 
+      active: false, 
+      color: "#2196F3",
+      api_endpoint: "mystic-island",
+      description: "Hòn đảo thần bí xuất hiện ngẫu nhiên với các boss và phần thưởng độc quyền."
+    },
+    { 
+      name: "Rip Indra True Form", 
+      world: "World 3", 
+      active: false, 
+      color: "#F44336",
+      api_endpoint: "rip-indra-true-form",
+      description: "Sự kiện boss Rip Indra True Form với độ khó cao và phần thưởng giá trị."
+    },
+    { 
+      name: "Dough King", 
+      world: "World 3", 
+      active: false, 
+      color: "#9C27B0",
+      api_endpoint: "dough-king",
+      description: "Vua Dough King xuất hiện với các tay sai và phần thưởng Dough Fruit độc quyền."
+    },
+    { 
+      name: "Darkbeard", 
+      world: "World 2", 
+      active: false, 
+      color: "#607D8B",
+      api_endpoint: "darkbeard",
+      description: "Darkbeard - boss hải tặc với sức mạnh bóng tối và phần thưởng Dark Fruit."
+    },
+    { 
+      name: "Cursed Captain", 
+      world: "World 2", 
+      active: false, 
+      color: "#795548",
+      api_endpoint: "cursed-captain",
+      description: "Thuyền trường bị nguyền rủa với các kỹ năng độc đáo và phần thưởng quý hiếm."
+    }
   ];
 
   // Hàm gọi API - CHỈ NHẬN DATA THẬT
@@ -792,6 +903,15 @@
     });
   }
 
+  // Hàm copy API URL
+  function copyApiUrl(url) {
+    navigator.clipboard.writeText(url).then(() => {
+      alert(`✅ Đã copy API URL: ${url}`);
+    }).catch(err => {
+      console.error('Lỗi copy: ', err);
+    });
+  }
+
   // Hàm tạo dropdown sự kiện
   function createEventsDropdown() {
     return `
@@ -799,7 +919,7 @@
         <div class="dropdown-header" id="dropdownHeader">
           <div>
             <strong><i class="fas fa-calendar-alt"></i> Tất Cả Sự Kiện Blox Fruits</strong>
-            <div class="event-world">Chọn một sự kiện để xem server list</div>
+            <div class="event-world">Chọn một sự kiện để xem API endpoint</div>
           </div>
           <i class="fas fa-chevron-down" id="dropdownArrow"></i>
         </div>
@@ -825,83 +945,79 @@
     `;
   }
 
-  // Hàm tạo panel hiển thị server list cho sự kiện
-  function createEventServersPanel() {
+  // Hàm tạo panel hiển thị API endpoint cho sự kiện
+  function createEventApiPanel() {
     return `
-      <div class="event-servers-panel" id="eventServersPanel">
-        <div class="event-servers-header">
-          <div class="event-servers-title" id="eventServersTitle">
-            <i class="fas fa-server"></i> Servers cho: <span id="selectedEventName"></span>
+      <div class="event-api-panel" id="eventApiPanel">
+        <div class="event-api-header">
+          <div class="event-api-title" id="eventApiTitle">
+            <i class="fas fa-code"></i> API Endpoint: <span id="selectedEventName"></span>
           </div>
-          <button class="close-servers" id="closeServers">
+          <button class="close-api" id="closeApi">
             <i class="fas fa-times"></i>
           </button>
         </div>
-        <div class="server-list" id="eventServersList">
-          <div class="no-servers">
-            <i class="fas fa-info-circle" style="font-size: 48px; margin-bottom: 15px;"></i>
-            <p>Không có server nào đang có sự kiện này</p>
-            <p style="font-size: 14px; margin-top: 10px;">Chạy script trong game để thấy servers thật</p>
+        
+        <div class="api-url">
+          <code id="apiUrlText">${API_BASE_URL}/events/</code>
+          <button class="copy-api-btn" id="copyApiBtn">
+            <i class="fas fa-copy"></i> Copy URL
+          </button>
+        </div>
+        
+        <div class="api-description">
+          <h4><i class="fas fa-info-circle"></i> Thông tin sự kiện:</h4>
+          <p id="eventDescription">Chọn một sự kiện để xem mô tả chi tiết.</p>
+          
+          <div style="margin-top: 15px;">
+            <h4><i class="fas fa-cogs"></i> Cách sử dụng API:</h4>
+            <p><span class="api-method get">GET</span> Lấy thông tin sự kiện hiện tại</p>
+            <p><span class="api-method post">POST</span> Gửi dữ liệu sự kiện mới</p>
+            
+            <div style="margin-top: 10px; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 5px;">
+              <strong>Ví dụ GET request:</strong>
+              <pre style="margin: 5px 0; color: #feca57;">fetch('${API_BASE_URL}/events/full-moon')
+  .then(response => response.json())
+  .then(data => console.log(data));</pre>
+            </div>
           </div>
         </div>
       </div>
     `;
   }
 
-  // Hàm hiển thị server list cho sự kiện được chọn
-  function showEventServers(eventName) {
-    const panel = document.getElementById('eventServersPanel');
+  // Hàm hiển thị API endpoint cho sự kiện được chọn
+  function showEventApi(eventName) {
+    const panel = document.getElementById('eventApiPanel');
     const title = document.getElementById('selectedEventName');
-    const serversList = document.getElementById('eventServersList');
+    const apiUrl = document.getElementById('apiUrlText');
+    const description = document.getElementById('eventDescription');
     
-    if (panel && title && serversList) {
-      // Cập nhật tiêu đề
-      title.textContent = eventName;
+    if (panel && title && apiUrl && description) {
+      // Tìm thông tin sự kiện
+      const eventInfo = eventsList.find(event => event.name === eventName);
       
-      // Lọc servers theo sự kiện (trong thực tế sẽ gọi API)
-      const filteredServers = activeServers.filter(server => 
-        server.last_event && server.last_event.toLowerCase().includes(eventName.toLowerCase())
-      );
-      
-      // Hiển thị servers
-      if (filteredServers.length > 0) {
-        serversList.innerHTML = filteredServers.map(server => `
-          <div class="server-item">
-            <div class="server-info">
-              <div class="server-job">Job: ${server.job_id}..</div>
-              <div>
-                <span class="server-players">Players: ${server.players}</span>
-                <span class="server-wait"> | Last Update: ${new Date(server.timestamp).toLocaleTimeString('vi-VN')}</span>
-              </div>
-            </div>
-            <div class="server-actions">
-              <button class="copy-btn" onclick="copyJobId('${server.job_id}')">
-                <i class="fas fa-copy"></i> Copy
-              </button>
-              <button class="copy-btn" style="background: #4CAF50;" onclick="joinServer('${server.job_id}')">
-                <i class="fas fa-play"></i> Join
-              </button>
-            </div>
-          </div>
-        `).join('');
-      } else {
-        serversList.innerHTML = `
-          <div class="no-servers">
-            <i class="fas fa-info-circle" style="font-size: 48px; margin-bottom: 15px;"></i>
-            <p>Không có server nào đang có sự kiện "${eventName}"</p>
-            <p style="font-size: 14px; margin-top: 10px;">Chạy script trong game để thấy servers thật</p>
-          </div>
-        `;
+      if (eventInfo) {
+        // Cập nhật tiêu đề
+        title.textContent = eventName;
+        
+        // Cập nhật API URL
+        const fullApiUrl = `${API_BASE_URL}/events/${eventInfo.api_endpoint}`;
+        apiUrl.textContent = fullApiUrl;
+        
+        // Cập nhật mô tả
+        description.textContent = eventInfo.description;
+        
+        // Cập nhật sự kiện click cho nút copy
+        const copyBtn = document.getElementById('copyApiBtn');
+        if (copyBtn) {
+          copyBtn.onclick = () => copyApiUrl(fullApiUrl);
+        }
+        
+        // Hiển thị panel
+        panel.classList.add('show');
       }
-      
-      // Hiển thị panel
-      panel.classList.add('show');
     }
-  }
-
-  // Hàm join server (mô phỏng)
-  function joinServer(jobId) {
-    alert(`🚀 Đang tham gia server: ${jobId}\n\n(Lưu ý: Đây là tính năng mô phỏng, trong thực tế sẽ mở Roblox và join server)`);
   }
 
   // Hàm khởi tạo dropdown sự kiện
@@ -940,17 +1056,17 @@
           dropdownArrow.classList.add('fa-chevron-down');
           dropdownArrow.classList.remove('fa-chevron-up');
           
-          // Hiển thị server list cho sự kiện được chọn
-          showEventServers(eventName);
+          // Hiển thị API endpoint cho sự kiện được chọn
+          showEventApi(eventName);
         });
       });
     }
     
-    // Xử lý đóng panel servers
-    const closeServers = document.getElementById('closeServers');
-    if (closeServers) {
-      closeServers.addEventListener('click', () => {
-        const panel = document.getElementById('eventServersPanel');
+    // Xử lý đóng panel API
+    const closeApi = document.getElementById('closeApi');
+    if (closeApi) {
+      closeApi.addEventListener('click', () => {
+        const panel = document.getElementById('eventApiPanel');
         if (panel) {
           panel.classList.remove('show');
         }
@@ -1012,9 +1128,12 @@
 
             <div class="card">
               <h3><i class="fas fa-calendar-alt"></i> Tất Cả Sự Kiện</h3>
-              <p>Chọn một sự kiện để xem danh sách server đang có sự kiện đó:</p>
+              <p>Chọn một sự kiện để xem API endpoint tương ứng:</p>
               ${createEventsDropdown()}
-              ${createEventServersPanel()}
+              ${createEventApiPanel()}
+              <p style="margin-top: 15px; font-size: 14px; color: #aaa;">
+                <i class="fas fa-info-circle"></i> Mỗi sự kiện có một API endpoint riêng để lấy dữ liệu thời gian thực
+              </p>
             </div>
 
             <div class="card">
@@ -1037,9 +1156,9 @@
             
             <div class="card">
               <h3><i class="fas fa-list"></i> Danh Sách Sự Kiện</h3>
-              <p>Chọn một sự kiện để xem server list:</p>
+              <p>Chọn một sự kiện để xem API endpoint:</p>
               ${createEventsDropdown()}
-              ${createEventServersPanel()}
+              ${createEventApiPanel()}
             </div>
             
             <div class="card">
@@ -1096,7 +1215,7 @@
             <div class="card">
               <h3><i class="fas fa-info-circle"></i> Hướng dẫn</h3>
               <p>• Click "Copy" để copy Job ID của server</p>
-              <p>• Click "Join" để tham gia server (mô phỏng)</p>
+              <p>• Sử dụng Job ID để join server thông qua script</p>
               <p>• Players: Hiển thị số người chơi hiện tại trong server</p>
               <p><strong>📢 Hiện chỉ hiển thị DATA THẬT từ Roblox</strong></p>
             </div>
